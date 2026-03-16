@@ -1,12 +1,13 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { styles } from "../styles/styles";
 import { useFonts } from "expo-font";
+import Svg, { Polygon } from "react-native-svg";
 import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold,} from "@expo-google-fonts/inter";
-import { Image } from "react-native";
+
 
 export default function Home() {
   const [fontsLoaded] = useFonts({
@@ -16,43 +17,65 @@ export default function Home() {
   });
 
   if (!fontsLoaded) {
-    return null; // wait for fonts
+    return null;
   }
 
   return (
-    <LinearGradient
-      colors={["#FFFFFF", "#7FAFD4"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{ flex: 1 }}
-    >
+    <SafeAreaView style={styles.safeArea}>
 
-      <SafeAreaView style={styles.safeArea}>
-        <StatusBar style="dark" />
+      {/* Background GIF */}
+      <Image
+        source={require("../assets/gifs/writing_background.gif")}
+        resizeMode="cover"
+        style={styles.backgroundGif}
+      />
 
-        <View style={styles.header}>
-          <Image
-            source={require("../assets/gifs/ic_assishelplogo.gif")}
-            style={{ width: 90, height: 90 }}
-          />
-          <View>
-            <Text style={styles.title}>ASSIS</Text>
-            <Text style={styles.title}>          HELP</Text>
-          </View>
+      <View style={styles.overlay}/>
+
+      <Svg height="100%" width="100%" style={styles.svg}>
+        <Polygon points="0,300 1000,900 1000,1000 0,1000"fill="white"/>
+      </Svg>
+
+      <StatusBar style="dark" />
+
+      {/* Logo and Name */}
+      <View style={styles.header}>
+        <Image
+          source={require("../assets/gifs/ic_assishelplogo.gif")}
+          style={{ width: 70, height: 70 }}
+        />
+        <View>
+          <Text style={styles.title}>TOBE</Text>
+          <Text style={styles.title}>          TON</Text>
         </View>
+      </View>
 
-        {/* Buttons */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.registerButton} onPress={() => router.push("/register")}>
-            <Text style={styles.buttonText}>Register</Text>
-          </TouchableOpacity>
+      {/* Buttons */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/login")}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+      </View>
 
-          <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/login")}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
+      <Text style={styles.orContinueText}> or continue using</Text>
+      
+      {/* Social Buttons */}
+      <View style={styles.socialRow}>
+        <Image
+          source={require("../assets/icons/appleLogo.png")}
+          style={styles.socialIcon}
+        />
+        <Image
+          source={require("../assets/icons/googleLogo.png")}
+          style={styles.socialIcon}
+        />
+      </View>
 
-        </View>
-      </SafeAreaView>
-    </LinearGradient>
+      <Text style={styles.registerText}>
+        Don't have an account yet? <Text style={{color:"#007AFF"}}>Register here.</Text>
+      </Text>
+
+      
+    </SafeAreaView>
   );
 }
