@@ -15,16 +15,16 @@ export const loginStyles = StyleSheet.create({
   },   
 
   titleText: {
-   fontSize: 40,
+   fontSize: 45,
    color: "black",
    fontFamily: "Inter_700Bold",
   },
   
   backText: {
-    fontSize: 40,
+    fontSize: 45,
     color: "black",
     fontFamily: "Inter_700Bold",
-    marginLeft: 40, 
+    marginLeft: 20, 
   },
 
   inputContainer: {

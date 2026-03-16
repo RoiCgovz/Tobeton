@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ToastAndroid } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,7 +11,8 @@ import { Image } from "react-native";
 import React, { useState } from "react";
 
 export default function Login() {
-  const [text, setText] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_600SemiBold,
@@ -20,6 +21,18 @@ export default function Login() {
 
   if (!fontsLoaded) {
     return null; 
+  }
+  
+  const handleLogin = () =>{
+    if (username === "" || password === "") {
+      ToastAndroid.show("Username and password empty, Please enter username and password", ToastAndroid.SHORT)
+      return;
+    }
+    if (username === "admin123" && password === "123"){
+      router.push("/mainpage")
+      ToastAndroid.show(`Login Successful! Welcome ${username}`, ToastAndroid.SHORT);
+    }
+
   }
 
   return (
@@ -52,16 +65,18 @@ export default function Login() {
            <View>
             <TextInput
                 style = {loginStyles.inputText}
-                onChangeText={newText => setText(newText)}
+                onChangeText={setUsername}
                 placeholder="Enter Username: "
+                value={username}
                 placeholderTextColor="rgba(120,120,120,0.4)"
             />
            </View>
            <View>
             <TextInput
                 style = {loginStyles.inputText}
-                onChangeText={newText => setText(newText)}
-                secureTextEntry={true} 
+                onChangeText={setPassword}
+                secureTextEntry={true}
+                value={password} 
                 placeholder="Enter Password: "
                 placeholderTextColor="rgba(120,120,120,0.4)"
             />
@@ -70,8 +85,13 @@ export default function Login() {
 
         {/* Login btn */}
         <View style={loginStyles.buttonContainer}>
-          <TouchableOpacity style={loginStyles.loginButton}>
-            <Text style={loginStyles.buttonText}>Login</Text>
+          <TouchableOpacity 
+            style={loginStyles.loginButton}
+            onPress={handleLogin}
+          >
+            <Text style={loginStyles.buttonText}>
+             Login
+            </Text>
           </TouchableOpacity>
         </View>
 
