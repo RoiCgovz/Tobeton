@@ -1,13 +1,17 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { View, Text, TouchableOpacity, Image, Dimensions } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { styles } from "../styles/styles";
 import { useFonts } from "expo-font";
 import Svg, { Polygon } from "react-native-svg";
-import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold,} from "@expo-google-fonts/inter";
+import {
+  Inter_400Regular,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from "@expo-google-fonts/inter";
 
+const { width, height } = Dimensions.get("window");
 
 export default function Home() {
   const [fontsLoaded] = useFonts({
@@ -22,7 +26,6 @@ export default function Home() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-
       {/* Background GIF */}
       <Image
         source={require("../assets/gifs/writing_background.gif")}
@@ -30,10 +33,13 @@ export default function Home() {
         style={styles.backgroundGif}
       />
 
-      <View style={styles.overlay}/>
+      <View style={styles.overlay} />
 
       <Svg height="100%" width="100%" style={styles.svg}>
-        <Polygon points="0,300 1000,900 1000,1000 0,1000"fill="white"/>
+        <Polygon
+          points={`0,${height * 0.30} ${width},${height * 0.68} ${width},${height} 0,${height}`}
+          fill="white"
+        />
       </Svg>
 
       <StatusBar style="dark" />
@@ -42,7 +48,7 @@ export default function Home() {
       <View style={styles.header}>
         <Image
           source={require("../assets/gifs/ic_assishelplogo.gif")}
-          style={{ width: 70, height: 70 }}
+          style={styles.logoImage}
         />
         <View>
           <Text style={styles.title}>TOBE</Text>
@@ -52,13 +58,16 @@ export default function Home() {
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/login")}>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => router.push("/login")}
+        >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.orContinueText}> or continue using</Text>
-      
+      <Text style={styles.orContinueText}>or continue using</Text>
+
       {/* Social Buttons */}
       <View style={styles.socialRow}>
         <Image
@@ -72,10 +81,9 @@ export default function Home() {
       </View>
 
       <Text style={styles.registerText}>
-        Don't have an account yet? <Text style={{color:"#007AFF"}}>Register here.</Text>
+        Don't have an account yet?{" "}
+        <Text style={{ color: "#007AFF" }}>Register here.</Text>
       </Text>
-
-      
     </SafeAreaView>
   );
 }

@@ -1,4 +1,6 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+const { width, height } = Dimensions.get("window");
 
 export const styles = StyleSheet.create({
   container: {
@@ -9,47 +11,48 @@ export const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 40,
+    paddingVertical: height * 0.05,
   },
 
   header: {
     position: "absolute",
-    bottom: 350,  
-    alignSelf: "left",
+    bottom: height * 0.44,
+    alignSelf: "flex-start",
     flexDirection: "row",
     alignItems: "center",
-    marginLeft: 20
+    marginLeft: width * 0.05,
   },
 
   logo: {
-    fontSize: 60,
-    marginRight: 15,
+    fontSize: width * 0.15,
+    marginRight: width * 0.03,
   },
 
   title: {
-    fontSize: 20,
+    fontSize: width * 0.05,
     color: "black",
     fontFamily: "Inter_700Bold",
   },
 
   buttonContainer: {
     position: "absolute",
-    bottom: 10,       
+    bottom: height * 0.01,
     width: "100%",
     alignItems: "center",
   },
+
   loginButton: {
     backgroundColor: "#000",
     width: "55%",
-    paddingVertical: 16,
+    paddingVertical: height * 0.02,
     borderRadius: 12,
     alignItems: "center",
-    marginBottom: 200,
+    marginBottom: height * 0.24,
   },
 
   buttonText: {
     color: "white",
-    fontSize: 21,
+    fontSize: width * 0.053,
     fontWeight: "600",
     fontFamily: "Inter_600SemiBold",
   },
@@ -57,14 +60,14 @@ export const styles = StyleSheet.create({
   backgroundGif: {
     position: "absolute",
     width: "100%",
-    height: "90%",
+    height: "100%",
   },
 
   overlay: {
     position: "absolute",
     width: "100%",
-    height: "90%",
-    backgroundColor: "rgba(0,0,0,0.80)"
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.80)",
   },
 
   whitePanel: {
@@ -80,42 +83,50 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
-    paddingBottom: 80,
+    paddingBottom: height * 0.1,
   },
 
-  svg:{
-    position:"absolute",
-    bottom: 200
+  svg: {
+    position: "absolute",
+    bottom: height * 0.20,
   },
 
   orContinueText: {
     position: "absolute",
     color: "black",
-    fontSize: 12,
-    bottom: 180,
+    fontSize: width * 0.03,
+    bottom: height * 0.21,
     fontWeight: "600",
     fontFamily: "Inter_600SemiBold",
   },
 
-  socialRow:{
+  socialRow: {
     position: "absolute",
-    bottom: 100,
-    flexDirection:"row",
-    gap:40,
-    marginBottom:20
+    bottom: height * 0.12,
+    flexDirection: "row",
+    gap: width * 0.1,
+    marginBottom: height * 0.025,
   },
 
-  socialIcon:{
-    width:40,
-    height:40
+  socialIcon: {
+    width: width * 0.1,
+    height: width * 0.1,
+    minWidth: 36,
+    minHeight: 36,
+    maxWidth: 42,
+    maxHeight: 42,
   },
 
-  registerText:{
+  registerText: {
     position: "absolute",
-    bottom: 80,
-    fontSize:12,
-    color:"#333",
+    bottom: height * 0.09,
+    fontSize: width * 0.03,
+    color: "#333",
     fontWeight: "600",
     fontFamily: "Inter_600SemiBold",
-  }
+  },
+  logoImage: {
+    width: "40%",
+    height: "170%",
+  },
 });
