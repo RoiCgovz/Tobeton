@@ -1,6 +1,8 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, Dimensions } from "react-native";
+
+const { width, height } = Dimensions.get("window");
 
 export default function TabLayout() {
   return (
@@ -9,34 +11,36 @@ export default function TabLayout() {
         headerShown: false,
         tabBarShowLabel: false,
 
-        tabBarStyle:{
-            position: "absolute",
-            margin: 40,
-            width: "80%",
-            backgroundColor: "#2e82db",
-            height: 60,
-            borderRadius: 30,
-            borderTopWidth: 0,
-            elevation: 10,
-            shadowColor: "#000",
-            shadowOpacity: 0.15,
-            shadowRadius: 10,
-            shadowOffset: { width: 0, height: 5 }
+        tabBarStyle: {
+          position: "absolute",
+          bottom: height * 0.07,
+          left: "50%",                    
+          transform: [{ translateX: (width * 0.2) / 2 }], 
+          width: width * 0.8,
+          backgroundColor: "#fff",
+          height: height * 0.08,
+          borderRadius: width * 0.15,
+          borderTopWidth: 0,
+          elevation: 10,
+          shadowColor: "#000",
+          shadowOpacity: 0.15,
+          shadowRadius: 10,
+          shadowOffset: { width: 0, height: height * 0.006 },
         },
 
-        tabBarItemStyle:{
+        tabBarItemStyle: {
           justifyContent: "center",
           alignItems: "center",
-          height: 60,
+          height: height * 0.08,
         },
 
-        tabBarIconStyle:{
-          width: 50,
-          height: 50,
+        tabBarIconStyle: {
+          width: width * 0.12,
+          height: width * 0.12,
         },
 
-        tabBarActiveTintColor: "#fff",
-        tabBarInactiveTintColor: "#fff"
+        tabBarActiveTintColor: "#000",
+        tabBarInactiveTintColor: "#aaa",
       }}
     >
 
@@ -49,7 +53,7 @@ export default function TabLayout() {
                 activeOpacity={0.6}
                 style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
             >
-                <Ionicons name="home" size={30} color="white" />
+                <Ionicons name="home" size={30} color="black" />
             </TouchableOpacity>
             ),
         }}

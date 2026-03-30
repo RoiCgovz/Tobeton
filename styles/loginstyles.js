@@ -1,70 +1,92 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+const { width, height } = Dimensions.get("window");
 
 export const loginStyles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+
+  /* BACKGROUND */
+  background: {
+  position: "absolute",
+  width: width * 1.6,
+  height: height * 1.6,
+    transform: [
+      { translateX: width * 0.02 },   
+      { translateY: height * 0.25 },  
+    ],
+  },
+
+  overlay: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.6)",
+  },
+
+  svg: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+  },
+  /* TOP BUTTON */
   topLeftButton: {
     position: "absolute",
-    top: 30,
-    left: 20,
+    top: height * 0.05,
+    left: width * 0.05,
   },
 
+  /* HEADER */
   loginHeader: {
-    flexDirection: "row",
-    alignSelf: "flex-start",
-    marginLeft: 60,
-    marginTop: 60,
-  },   
+    marginTop: height * 0.2,
+    marginLeft: width * 0.1,
+  },
 
   titleText: {
-   fontSize: 45,
-   color: "black",
-   fontFamily: "Inter_700Bold",
-  },
-  
-  backText: {
-    fontSize: 45,
+    fontSize: width * 0.08,
     color: "black",
     fontFamily: "Inter_700Bold",
-    marginLeft: 20, 
   },
 
+  /* INPUTS */
   inputContainer: {
-    flex: 1,
-    padding: 20,
-    marginTop: 10,
-    width: "100%",
+    alignItems: "center",
+    marginTop: -height * 0.1,
   },
 
   inputText: {
-    height: 65,
-    marginTop: 45,
-    backgroundColor: "#FFFFFF", // white box
-    borderRadius: 16,           // rounded
+    width: "85%",
+    height: height * 0.08,
+    marginTop: height * 0.03,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
     paddingHorizontal: 16,
-    fontSize: 18,
-    elevation: 4,
+    fontSize: width * 0.045,
+    elevation: 5,
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.08)",
     fontFamily: "Inter_600SemiBold",
-    },
+  },
+
+  /* BUTTON */
+  buttonContainer: {
+    alignItems: "center",
+    marginBottom: height * 0.14,
+  },
 
   loginButton: {
-    backgroundColor: "#2E82DB",
-    width: "75%",
-    paddingVertical: 16,
+    backgroundColor: "#222",
+    width: "60%",
+    paddingVertical: height * 0.02,
     borderRadius: 12,
     alignItems: "center",
-    marginBottom: 100
   },
 
-  buttonContainer: {
-    width: "80%",
-    alignItems: "center",
-  },
-  
   buttonText: {
     color: "white",
-    fontSize: 21,
-    fontWeight: "600",
+    fontSize: width * 0.05,
     fontFamily: "Inter_600SemiBold",
   },
 });
