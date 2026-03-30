@@ -68,7 +68,7 @@ export default function TabLayout() {
                 activeOpacity={0.6}
                 style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
             >
-                <Ionicons name="profile" size={40} color="white" />
+                <Ionicons name="person-circle-outline" size={40} color="black" />
             </TouchableOpacity>
             ),
         }}
@@ -83,7 +83,7 @@ export default function TabLayout() {
                 activeOpacity={0.6}
                 style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
             >
-                <Ionicons name="settings" size={40} color="white" />
+                <Ionicons name="cog-outline" size={40} color="black" />
             </TouchableOpacity>
             ),
         }}
