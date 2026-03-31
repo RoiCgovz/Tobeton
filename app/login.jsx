@@ -37,6 +37,12 @@ export default function Login() {
         ToastAndroid.SHORT
       );
     }
+    if (username !== "admin123" && password !== "123"){
+      ToastAndroid.show(
+        `Account not found`,
+        ToastAndroid.SHORT
+      );
+    }
   };
 
   return (
