@@ -80,10 +80,16 @@ export default function Home() {
         />
       </View>
 
-      <Text style={styles.registerText}>
-        Don't have an account yet?{" "}
-        <Text style={{ color: "#007AFF" }}>Register here.</Text>
-      </Text>
+      <View style={styles.registerContainer}>
+          <Text style={styles.registerText}>
+            Don't have an account yet?{" "}
+          </Text>
+          <TouchableOpacity onPress={() => router.push("/register")}>
+            <Text style={styles.registerHere}>
+              Register here.
+            </Text>
+          </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }

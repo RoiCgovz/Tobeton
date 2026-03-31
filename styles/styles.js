@@ -116,15 +116,28 @@ export const styles = StyleSheet.create({
     maxWidth: 42,
     maxHeight: 42,
   },
+  registerContainer: {
+    position: "absolute",
+    bottom: height * 0.09, 
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
   registerText: {
-    position: "absolute",
-    bottom: height * 0.09,
     fontSize: width * 0.03,
     color: "#333",
     fontWeight: "600",
     fontFamily: "Inter_600SemiBold",
   },
+
+  registerHere: {
+    color: "#007AFF", 
+    fontFamily: "Inter_600SemiBold",
+    fontSize: width * 0.03,
+  },
+
   logoImage: {
     width: "40%",
     height: "170%",

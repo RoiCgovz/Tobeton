@@ -1,91 +1,146 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { StatusBar } from "expo-status-bar";
+import React, { useState } from "react";
+import Svg, { Polygon } from "react-native-svg";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  ToastAndroid,
+  Image,
+  Dimensions,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { styles } from "../styles/styles";
-import { loginStyles } from "../styles/loginstyles";
-import { regStyles } from "../styles/regstyles";
 import { useFonts } from "expo-font";
-import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold,} from "@expo-google-fonts/inter";
-import { Image } from "react-native";
-import React, { useState } from "react";
+import {
+  Inter_400Regular,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from "@expo-google-fonts/inter";
+import { regStyles } from "../styles/regstyles";
+
+const { width, height } = Dimensions.get("window");
 
 export default function Register() {
-  const [text, setText] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_600SemiBold,
     Inter_700Bold,
   });
 
-  if (!fontsLoaded) {
-    return null; 
-  }
+  if (!fontsLoaded) return null;
+
+  const handleRegister = () => {
+    if (!username || !password || !confirmPassword) {
+      ToastAndroid.show(
+        "Please fill in all fields",
+        ToastAndroid.SHORT
+      );
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      ToastAndroid.show(
+        "Passwords do not match",
+        ToastAndroid.SHORT
+      );
+      return;
+    }
+
+    ToastAndroid.show(
+      `Account created for ${username}`,
+      ToastAndroid.SHORT
+    );
+
+    router.push("/login");
+  };
 
   return (
-    <LinearGradient
-      colors={["#FFFFFF", "#7FAFD4"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{ flex: 1 }} >
+    <View style={{ flex: 1 }}>
+      {/* BACKGROUND */}
+      <Image
+        source={require("../assets/gifs/writing.gif")}
+        style={regStyles.background}
+        resizeMode="cover"
+      />
 
-      <SafeAreaView style={styles.safeArea}>
+      {/* OVERLAY */}
+      <View style={regStyles.overlay} />
 
-        {/* Back Btn  */}
-        <TouchableOpacity style={regStyles.topLeftButton} onPress={() => router.push("/")}>
-           <Image
+      {/* SVG PANEL */}
+      <Svg
+        height="100%"
+        width="100%"
+        style={regStyles.svg}
+        pointerEvents="none"
+      >
+        <Polygon
+          points={`0,0 ${width},0 ${width},${height * 0.4} 0,${height}`}
+          fill="#EDEDED"
+        />
+      </Svg>
+
+      <SafeAreaView style={regStyles.safeArea}>
+        {/* Back Button */}
+        <TouchableOpacity
+          style={regStyles.topLeftButton}
+          onPress={() => router.push("/")}
+        >
+          <Image
             source={require("../assets/icons/ic_left_arrow.png")}
-            style={{ marginTop: 15, width: 30, height: 30 }}
-            />
+            style={{ width: 30, height: 30 }}
+          />
         </TouchableOpacity>
 
-        {/* Header/Title Text */}
+        {/* Header */}
         <View style={regStyles.regHeader}>
-          <View>
-            <Text style={regStyles.titleText}>Create your free</Text>
-            <Text style={regStyles.backText}>     Account Today!</Text>
-          </View>
+          <Text style={regStyles.titleText}>Start studying with</Text>
+          <Text style={regStyles.titleText}>Tobeton</Text>
         </View>
 
-        {/* Input Boxes */}
+        {/* Inputs */}
         <View style={regStyles.inputContainer}>
-           <View>
-            <TextInput
-                style = {regStyles.inputText}
-                onChangeText={newText => setText(newText)}
-                placeholder="Enter Username: "
-                placeholderTextColor="rgba(120,120,120,0.4)"
-            />
-           </View>
-           <View>
-            <TextInput
-                style = {regStyles.inputText}
-                onChangeText={newText => setText(newText)}
-                secureTextEntry={true} 
-                placeholder="Enter Password: "
-                placeholderTextColor="rgba(120,120,120,0.4)"
-            />
-           </View>
-           <View>
-            <TextInput
-                style = {regStyles.inputText}
-                onChangeText={newText => setText(newText)}
-                secureTextEntry={true} 
-                placeholder="Re-enter Password: "
-                placeholderTextColor="rgba(120,120,120,0.4)"
-            />
-           </View>
+          <TextInput
+            style={regStyles.inputText}
+            onChangeText={setUsername}
+            value={username}
+            placeholder="Username"
+            placeholderTextColor="rgba(120,120,120,0.4)"
+          />
+
+          <TextInput
+            style={regStyles.inputText}
+            onChangeText={setPassword}
+            value={password}
+            secureTextEntry
+            placeholder="Password"
+            placeholderTextColor="rgba(120,120,120,0.4)"
+          />
+
+          <TextInput
+            style={regStyles.inputText}
+            onChangeText={setConfirmPassword}
+            value={confirmPassword}
+            secureTextEntry
+            placeholder="Confirm Password"
+            placeholderTextColor="rgba(120,120,120,0.4)"
+          />
         </View>
 
-        {/* Login btn */}
+        {/* Button */}
         <View style={regStyles.buttonContainer}>
-          <TouchableOpacity style={regStyles.regButton}>
+          <TouchableOpacity
+            style={regStyles.regButton}
+            onPress={handleRegister}
+          >
             <Text style={regStyles.buttonText}>Register</Text>
           </TouchableOpacity>
         </View>
-
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }
