@@ -42,7 +42,10 @@ export default function ProfilePage() {
                         onPress={() => console.log('Banner pressed')}
                         activeOpacity={0.7}
                     >
-                        <View style={profilePageStyles.blackBanner} />
+                        <Image
+                            source={require("../../assets/gifs/kimi_no_nawa.gif")}
+                            style={profilePageStyles.bannerPicture}
+                        />
                     </TouchableOpacity>
 
                     {/* Add Button - Separate Pressable (Positioned absolutely) */}
@@ -63,7 +66,7 @@ export default function ProfilePage() {
                             activeOpacity={0.6}
                         >
                             <Image
-                                source={require("../../assets/icons/profilepic.png")}
+                                source={require("../../assets/gifs/sixseven.gif")}
                                 style={profilePageStyles.profileImage}
                             />
                         </TouchableOpacity>
@@ -72,7 +75,7 @@ export default function ProfilePage() {
 
                 {/* Profile Stats Section */}
                 <View style={profilePageStyles.profileStats}>
-                    <Text style={profilePageStyles.username}>Sample Username</Text>
+                    <Text style={profilePageStyles.username}>SIX SEVEN</Text>
 
                     <View style={profilePageStyles.statsRow}>
                         <View style={profilePageStyles.statItem}>

@@ -12,11 +12,11 @@ export const profilePageStyles = StyleSheet.create({
         height: height * 0.25,
         position: 'relative',
     },
-    blackBanner: {
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#000000',
+    bannerPicture: {
+        width: width,
+        height: height * 0.25,
     },
+
     addButton: {
         position: 'absolute',
         bottom: -47,  // Changed from -50 to -20 to move it up
