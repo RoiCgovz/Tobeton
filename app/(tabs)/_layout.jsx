@@ -59,6 +59,21 @@ export default function TabLayout() {
         }}
       />
 
+       <Tabs.Screen
+        name="folders"
+        options={{
+          tabBarButton: (props) => (
+            <TouchableOpacity
+              {...props}
+              activeOpacity={0.6}
+              style={{ flex: 1, justifyContent: "center", alignItems: "center"}}
+            >    
+              <Ionicons name="folder-open-outline" size={40} color="black"/>
+            </TouchableOpacity>
+          ),
+        }}  
+      />
+
       <Tabs.Screen
         name="profile"
         options={{
@@ -74,6 +89,7 @@ export default function TabLayout() {
         }}
       />
 
+
       <Tabs.Screen
         name="settings"
         options={{
@@ -88,6 +104,8 @@ export default function TabLayout() {
             ),
         }}
       />
+
+     
 
     </Tabs>
   );
