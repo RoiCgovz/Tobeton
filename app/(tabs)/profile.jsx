@@ -1,4 +1,5 @@
 import React from "react";
+import { router } from 'expo-router';
 import {
     View,
     Text,
@@ -7,7 +8,7 @@ import {
     Image,
     Dimensions,
 } from "react-native";
-import { profilePageStyles } from "../../styles/profilestyles";
+import { profilePageStyles } from "../../styles/profilestyles";  // 3 dots
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
@@ -17,7 +18,6 @@ import {
     Inter_700Bold,
 } from "@expo-google-fonts/inter";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
-
 const { width, height } = Dimensions.get("window");
 
 export default function ProfilePage() {
@@ -100,8 +100,11 @@ export default function ProfilePage() {
                     <Text style={profilePageStyles.sectionTitle}>Your Collection</Text>
 
                     <View style={profilePageStyles.cardsGrid}>
-                        {/* Card 1 - Top Right (Achievements Card) */}
-                        <TouchableOpacity style={profilePageStyles.trippyCard}>
+                        {/* Card 1 - Top Right (Achievements Card) - Navigate to Achievements page */}
+
+                        <TouchableOpacity style={profilePageStyles.trippyCard}
+                            onPress={() => router.push('/profile/achievement')}>
+
                             <View style={profilePageStyles.cardIconContainer}>
                                 <Ionicons name="trophy-outline" size={32} color="#000000" />
                             </View>
