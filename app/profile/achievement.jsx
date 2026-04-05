@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { achievementPageStyles } from "../../styles/achievementpagestyle";
+import { achievementPageStyles } from "../../styles/achievementpagestyles";
 
 const { width } = Dimensions.get("window");
 

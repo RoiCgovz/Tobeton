@@ -1,4 +1,5 @@
 import React from "react";
+import { router } from 'expo-router';
 import {
     View,
     Text,
@@ -39,7 +40,10 @@ export default function SettingsPage() {
                 <Text style={settingsPageStyles.title}>Settings</Text>
 
                 {/* Profile Card */}
-                <TouchableOpacity style={settingsPageStyles.card}>
+                <TouchableOpacity
+                    style={settingsPageStyles.card}
+                    onPress={() => router.push('/settings/changeprofile')}
+                >
                     <View style={settingsPageStyles.row}>
                         <Image
                             source={require("../../assets/icons/profilepic.png")}
