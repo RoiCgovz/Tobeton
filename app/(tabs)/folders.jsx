@@ -31,8 +31,12 @@ export default function FolderPage() {
 
     if (!fontsLoaded) return null;
 
-    const folders = ["Comprog", "DSA", "Math", "Science", "History"];
-
+   const folders = [ { name: "Comprog", count: 67 },
+                     { name: "DSA", count: 7 },
+                     { name: "Math", count: 15 },
+                     { name: "Science", count: 5 },
+                     { name: "History", count: 3 },
+                   ];
     return (
         <View style={{ flex: 1 }}>
             <StatusBar style="dark" />
@@ -76,34 +80,38 @@ export default function FolderPage() {
                 </View>
 
                 {/* FOLDERS */}
-                <View style={{ flex: 1 }}>
+                <View style={folderPageStyles.scrollContainer}>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         {folders.map((folder, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                style={folderPageStyles.folderCard}
-                                onPress={() =>
-                                    router.push({
-                                        pathname: "/folders/cards",
-                                        params: { folderName: folder },
-                                    })
-                                }
-                            >
-                                <Text
-                                    style={{
-                                        fontFamily: "Inter_600SemiBold",
-                                        fontSize: 16,
-                                    }}
-                                >
-                                    {folder}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
+                        <TouchableOpacity
+                            key={index}
+                            style={folderPageStyles.folderCard}
+                            onPress={() =>
+                                router.push({
+                                pathname: "/folders/cards",
+                                params: { folderName: folder.name },
+                                })
+                            }
+                        >
+                            {/* Title */}
+                            <Text style={folderPageStyles.folderTitle}>
+                                {folder.name}
+                            </Text>
 
+                            {/* Cards */}
+                            <Text style={folderPageStyles.folderSubText}>
+                                {folder.count} cards
+                            </Text>
+
+                            <Text style={folderPageStyles.folderSubText}>
+                                67% Score
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                    </ScrollView>
                     {/* FLOATING BUTTONS */}
                     <View style={folderPageStyles.rightButtons}>
-                        <TouchableOpacity style={folderPageStyles.squareBtn}>
+                        <TouchableOpacity onPress={()=> router.push("/folders/createFolder")} style={folderPageStyles.squareBtn}>
                             <Text style={folderPageStyles.plus}>+</Text>
                         </TouchableOpacity>
 
