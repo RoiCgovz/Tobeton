@@ -2,6 +2,8 @@ import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity, Dimensions } from "react-native";
 
+const { width, height } = Dimensions.get("window");
+
 export default function TabsLayout() {
   return (
     <Tabs
@@ -13,7 +15,7 @@ export default function TabsLayout() {
           position: "absolute",
           bottom: height * 0.07,
           left: "50%",                    
-          transform: [{ translateX: (width * 0.8 ) / 2 }], 
+          transform: [{ translateX: (width * 0.2 ) / 2 }], 
           width: width * 0.8,
           backgroundColor: "#fff",
           height: height * 0.08,
