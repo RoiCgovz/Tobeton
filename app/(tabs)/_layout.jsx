@@ -2,6 +2,8 @@ import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity, Dimensions } from "react-native";
 
+const { width, height } = Dimensions.get("window");
+
 export default function TabsLayout() {
   return (
     <Tabs
