@@ -7,12 +7,10 @@ export const cardPageStyles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#FFFFFF",
     },
-
-
     contentContainer: {
         flex: 1,
         paddingHorizontal: 25,
-        zIndex: 1, // Ensures text stays above the slant
+        zIndex: 1, 
     },
     header: {
         flexDirection: "row",

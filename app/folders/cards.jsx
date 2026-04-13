@@ -7,6 +7,8 @@ import {
     StatusBar,
     Image,
     Dimensions,
+    Touchable,
+    ToastAndroid,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
@@ -56,7 +58,10 @@ export default function CardsPage() {
                     <Text style={cardPageStyles.title}>
                         {folderName ? String(folderName) : "Comprog"}
                     </Text>
-                    <View style={{ width: 28 }} />
+                    <TouchableOpacity onPress={() => router.push("/cards/createCards")}>
+                        <Ionicons name="add-outline" size={40} color="black"/>
+                    </TouchableOpacity>
+
                 </View>
 
                 {/* LEARN SECTION */}
@@ -69,11 +74,16 @@ export default function CardsPage() {
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={cardPageStyles.learnBox}>
-                        <View style={cardPageStyles.cardIconStack}>
-                            <MaterialCommunityIcons name="cards-playing-outline" size={50} color="black" />
-                            <Text style={cardPageStyles.cardIconNumber}>1</Text>
-                        </View>
+                    <TouchableOpacity 
+                        style={cardPageStyles.learnBox} 
+                        onPress={() => {
+                            ToastAndroid.show("Opening Flashcards....", ToastAndroid.SHORT)
+                            router.push("/folders/flashcards")}
+                        }>
+                            <View style={cardPageStyles.cardIconStack}>
+                                <MaterialCommunityIcons name="cards-playing-outline" size={50} color="black" />
+                                <Text style={cardPageStyles.cardIconNumber}>1</Text>
+                            </View>
                     </TouchableOpacity>
                 </View>
 
@@ -83,7 +93,11 @@ export default function CardsPage() {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 40 }}>
                     {[1, 2, 3, 4, 5].map((item) => (
-                        <TouchableOpacity key={item} style={cardPageStyles.card}>
+                        <TouchableOpacity 
+                            key={item} 
+                            style={cardPageStyles.card}
+                            onPress={() => router.push("/cards/editCards")}
+                        >
                             <Text style={cardPageStyles.cardText}>(Sample Question)</Text>
                             <Ionicons name="chevron-forward" size={20} color="black" />
                         </TouchableOpacity>
