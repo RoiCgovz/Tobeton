@@ -64,7 +64,7 @@ export const folderPageStyles = StyleSheet.create({
 
   scrollContainer: {
     maxHeight: height * 0.65,
-    width: width * 0.9,
+    width: width * 0.75,
     backgroundColor: "#transparent",
     borderRadius: 15,
     padding: 10,
@@ -101,8 +101,8 @@ export const folderPageStyles = StyleSheet.create({
 
   rightButtons: {
     position: "absolute",
-    right: 0,
-    top: height * 0.03,
+    right: 12,
+    top: height * 0.262,
     justifyContent: "space-between",
     height: height * 0.25,
   },
@@ -127,4 +127,37 @@ export const folderPageStyles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
   },
+
+  gridContainer: {
+  flexDirection: "row",
+  flexWrap: "wrap",
+  justifyContent: "space-between",
+},
+
+gridCard: {
+  width: "48%",
+  height: height * 0.18,
+  backgroundColor: "#fff",
+  borderRadius: 10,
+  borderWidth: 2,
+  borderColor: "#000",
+  marginBottom: 10,
+  padding: 15,
+  justifyContent: "center",
+  elevation: 6,
+},
+
+listCard: {
+  flexDirection: "row",
+  width: "100%",
+  height: height * 0.10,
+  backgroundColor: "#fff",
+  borderRadius: 10,
+  borderWidth: 2,
+  borderColor: "#000",
+  marginBottom: 10,
+  padding: 15,
+  justifyContent: "center",
+  elevation: 6,
+},
 });
