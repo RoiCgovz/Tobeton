@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
@@ -7,6 +7,7 @@ import {
     TextInput,
     Image,
     Dimensions,
+    ToastAndroid,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -23,6 +24,8 @@ import { router } from "expo-router";
 const { width, height } = Dimensions.get("window");
 
 export default function FolderPage() {
+    const [layout, setLayout] = useState("scroll");
+
     const [fontsLoaded] = useFonts({
         Inter_400Regular,
         Inter_600SemiBold,
@@ -31,12 +34,12 @@ export default function FolderPage() {
 
     if (!fontsLoaded) return null;
 
-   const folders = [ { name: "Comprog", count: 67 },
-                     { name: "DSA", count: 7 },
-                     { name: "Math", count: 15 },
-                     { name: "Science", count: 5 },
-                     { name: "History", count: 3 },
-                   ];
+    const folders = [{ name: "Comprog", count: 67 },
+    { name: "DSA", count: 7 },
+    { name: "Math", count: 15 },
+    { name: "Science", count: 5 },
+    { name: "History", count: 3 },
+    ];
     return (
         <View style={{ flex: 1 }}>
             <StatusBar style="dark" />
@@ -81,37 +84,71 @@ export default function FolderPage() {
 
                 {/* FOLDERS */}
                 <View style={folderPageStyles.scrollContainer}>
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                        {folders.map((folder, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            style={folderPageStyles.folderCard}
-                            onPress={() =>
-                                router.push({
-                                pathname: "/folders/cards",
-                                params: { folderName: folder.name },
-                                })
-                            }
-                        >
-                            {/* Title */}
-                            <Text style={folderPageStyles.folderTitle}>
-                                {folder.name}
-                            </Text>
+                    {layout === "grid" ? (
+                        // 🔲 GRID VIEW
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            <View style={folderPageStyles.gridContainer}>
+                                {folders.map((folder, index) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={folderPageStyles.gridCard}
+                                        onPress={() =>
+                                            router.push({
+                                                pathname: "/folders/cards",
+                                                params: { folderName: folder.name },
+                                            })
+                                        }
+                                    >
+                                        <Text style={folderPageStyles.folderTitle}>
+                                            {folder.name}
+                                        </Text>
+                                        <Text style={folderPageStyles.folderSubText}>
+                                            {folder.count} cards
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </ScrollView>
+                    ) : (
+                        // 📜 SCROLL + 📋 LIST
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            {folders.map((folder, index) => (
+                                <TouchableOpacity
+                                    key={index}
+                                    style={
+                                        layout === "list"
+                                            ? folderPageStyles.listCard
+                                            : folderPageStyles.folderCard
+                                    }
+                                    onPress={() =>
+                                        router.push({
+                                            pathname: "/folders/cards",
+                                            params: { folderName: folder.name },
+                                        })
+                                    }
+                                >
+                                    <Text style={folderPageStyles.folderTitle}>
+                                        {folder.name}
+                                    </Text>
 
-                            {/* Cards */}
-                            <Text style={folderPageStyles.folderSubText}>
-                                {folder.count} cards
-                            </Text>
+                                    <Text style={folderPageStyles.folderSubText}>
+                                        {folder.count} cards
+                                    </Text>
 
-                            <Text style={folderPageStyles.folderSubText}>
-                                67% Score
-                            </Text>
-                        </TouchableOpacity>
-                    ))}
-                    </ScrollView>
-                    {/* FLOATING BUTTONS */}
+                                    <Text style={folderPageStyles.folderSubText}>
+                                        67% Score
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    )}
+                </View>
+                 {/* FLOATING BUTTONS */}
                     <View style={folderPageStyles.rightButtons}>
-                        <TouchableOpacity onPress={()=> router.push("/folders/createFolder")} style={folderPageStyles.squareBtn}>
+                        <TouchableOpacity
+                            onPress={() => router.push("/folders/createFolder")}
+                            style={folderPageStyles.squareBtn}
+                        >
                             <Text style={folderPageStyles.plus}>+</Text>
                         </TouchableOpacity>
 
@@ -119,11 +156,38 @@ export default function FolderPage() {
                             <Text>🖼️</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={folderPageStyles.squareBtn}>
-                            <Text>☰</Text>
+                        {/* SWITCH BUTTON */}
+                        <TouchableOpacity
+                            style={folderPageStyles.squareBtn}
+                            onPress={() => {
+                                if (layout === "scroll") {
+                                    setLayout("list")
+                                    ToastAndroid.show(
+                                            "List View",
+                                            ToastAndroid.SHORT
+                                        );
+                                }
+                                else if (layout === "list"){
+                                    setLayout("grid")
+                                    ToastAndroid.show(
+                                            "Grid View",
+                                            ToastAndroid.SHORT
+                                        );
+                                }
+                                else {
+                                    setLayout("scroll")
+                                    ToastAndroid.show(
+                                            "Scroll View",
+                                            ToastAndroid.SHORT
+                                        );
+                                }
+                            }}
+                        >
+                            <Text>
+                                {layout === "scroll" ? "☰" : layout === "list" ? "📋" : "🔲"}
+                            </Text>
                         </TouchableOpacity>
                     </View>
-                </View>
             </SafeAreaView>
         </View>
     );

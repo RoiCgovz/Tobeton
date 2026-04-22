@@ -52,14 +52,14 @@ export default function CardsPage() {
             <View style={cardPageStyles.contentContainer}>
 
                 <View style={cardPageStyles.header}>
-                    <TouchableOpacity onPress={() => router.push("/(tabs)/folders")}>
+                    <TouchableOpacity onPress={() => router.back()}>
                         <Ionicons name="chevron-back" size={28} color="black" />
                     </TouchableOpacity>
                     <Text style={cardPageStyles.title}>
                         {folderName ? String(folderName) : "Comprog"}
                     </Text>
                     <TouchableOpacity onPress={() => router.push("/cards/createCards")}>
-                        <Ionicons name="add-outline" size={40} color="black"/>
+                        <Ionicons name="add-outline" size={40} color="black" />
                     </TouchableOpacity>
 
                 </View>
@@ -67,23 +67,33 @@ export default function CardsPage() {
                 {/* LEARN SECTION */}
                 <Text style={cardPageStyles.sectionTitle}>Learn</Text>
                 <View style={cardPageStyles.learnRow}>
-                    <TouchableOpacity style={cardPageStyles.learnBox}>
+                    <TouchableOpacity style={cardPageStyles.learnBox}
+                        onPress={() => 
+                            router.push({
+                                pathname: "/folders/quiz", 
+                                params: { folderName: folderName }, 
+                            })                                                  
+                        }
+                        >
                         <MaterialCommunityIcons name="file-document-outline" size={45} color="black" />
                         <View style={cardPageStyles.clockOverlay}>
                             <MaterialCommunityIcons name="clock-outline" size={16} color="black" />
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
-                        style={cardPageStyles.learnBox} 
-                        onPress={() => {
-                            ToastAndroid.show("Opening Flashcards....", ToastAndroid.SHORT)
-                            router.push("/folders/flashcards")}
-                        }>
-                            <View style={cardPageStyles.cardIconStack}>
-                                <MaterialCommunityIcons name="cards-playing-outline" size={50} color="black" />
-                                <Text style={cardPageStyles.cardIconNumber}>1</Text>
-                            </View>
+                    <TouchableOpacity
+                        style={cardPageStyles.learnBox}
+                        onPress={() => 
+                            router.push({
+                                pathname: "/folders/flashcards", 
+                                params: { folderName: folderName }, 
+                            })                                                  
+                        }
+                        >
+                        <View style={cardPageStyles.cardIconStack}>
+                            <MaterialCommunityIcons name="cards-playing-outline" size={50} color="black" />
+                            <Text style={cardPageStyles.cardIconNumber}>1</Text>
+                        </View>
                     </TouchableOpacity>
                 </View>
 
@@ -93,8 +103,8 @@ export default function CardsPage() {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 40 }}>
                     {[1, 2, 3, 4, 5].map((item) => (
-                        <TouchableOpacity 
-                            key={item} 
+                        <TouchableOpacity
+                            key={item}
                             style={cardPageStyles.card}
                             onPress={() => router.push("/cards/editCards")}
                         >
