@@ -44,11 +44,7 @@ export default function QuizPage() {
                 <TouchableOpacity style={quizstyles.optionLeft} />
                 <TouchableOpacity style={quizstyles.optionRight} />
             </View>
-
-            {/* NEXT BUTTON */}
-            <TouchableOpacity style={quizstyles.optionBottom}>
-                <Text style={quizstyles.nextText}></Text>
-            </TouchableOpacity>
+            <TouchableOpacity style={quizstyles.optionBottom} />
 
         </SafeAreaView>
     );

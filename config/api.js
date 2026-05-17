@@ -12,7 +12,7 @@ const getBaseUrl = () => {
   // For development
   if (Platform.OS === 'android') {
     // For Android physical device - USE YOUR IP
-    return 'http://192.168.1.2:5000';
+    return 'http://192.168.254.114:5000';
   }
   
   // iOS Simulator or physical device
@@ -77,6 +77,9 @@ export default {
   
   register: (username, password) => 
     apiRequest('/auth/register', 'POST', { username, password }, false),
+
+  get: (endpoint) =>
+    apiRequest(endpoint, 'GET', null, true),
 
   // User endpoints (auth required)
   updateUsername: (userId, newUsername) => 

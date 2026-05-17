@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Image, Dimensions, } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -6,10 +6,32 @@ import Svg, { Polygon } from "react-native-svg";
 import { useFonts } from "expo-font";
 import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold, } from "@expo-google-fonts/inter";
 import { mainPageStyles } from "../../styles/mainpagestyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const { width, height } = Dimensions.get("window");
 
+
+
 export default function MainPage() {
+  const [username, setUsername] = useState("User");
+
+  useEffect(() => {
+    const loadUsername = async () => {
+      try {
+        const storedUsername = await AsyncStorage.getItem("username");
+
+        if (storedUsername) {
+          setUsername(storedUsername);
+        }
+      } catch (error) {
+        console.log("Error loading username:", error);
+      }
+    };
+
+    loadUsername();
+  }, []);
+
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_600SemiBold,
@@ -17,19 +39,19 @@ export default function MainPage() {
   });
 
   const icons = [
-  {
-    icon: require("../../assets/icons/icons8-trophy-100.png"),
-    action: () => console.log("Stats"),
-  },
-  {
-    icon: require("../../assets/icons/icons8-tetris-100.png"),
-    action: () => console.log("Subjects"),
-  },
-  {
-    icon: require("../../assets/icons/icons8-medal-100.png"),
-    action: () => console.log("Achievements"),
-  },
-];
+    {
+      icon: require("../../assets/icons/icons8-trophy-100.png"),
+      action: () => console.log("Stats"),
+    },
+    {
+      icon: require("../../assets/icons/icons8-tetris-100.png"),
+      action: () => console.log("Subjects"),
+    },
+    {
+      icon: require("../../assets/icons/icons8-medal-100.png"),
+      action: () => console.log("Achievements"),
+    },
+  ];
 
   if (!fontsLoaded) return null;
 
@@ -81,7 +103,7 @@ export default function MainPage() {
                 <Text style={mainPageStyles.greeting}>
                   Greetings Comrade,
                 </Text>
-                <Text style={mainPageStyles.name}>admin123</Text>
+                <Text style={mainPageStyles.name}>{username}</Text>
               </View>
             </View>
 
@@ -122,7 +144,7 @@ export default function MainPage() {
                 <View style={mainPageStyles.subjectCard}>
                   <Image
                     source={require("../../assets/gifs/sixseven(2).gif")}
-                    style={mainPageStyles.subjectImage}  
+                    style={mainPageStyles.subjectImage}
                   />
                   <Text style={mainPageStyles.subjectTitle}>
                     SIX SEVEN

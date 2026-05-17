@@ -91,6 +91,7 @@ export const profilePageStyles = StyleSheet.create({
         fontFamily: 'Inter_700Bold',
         color: '#1C1E21',
         marginBottom: 16,
+        textAlign: 'left',
     },
     statsRow: {
         flexDirection: 'row',
@@ -99,7 +100,7 @@ export const profilePageStyles = StyleSheet.create({
         borderRadius: 12,
         paddingVertical: 16,
         paddingHorizontal: 20,
-        marginBottom: 16,
+        marginBottom: 5,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
@@ -111,13 +112,13 @@ export const profilePageStyles = StyleSheet.create({
         alignItems: 'center',
     },
     statNumber: {
-        fontSize: 20,
+        fontSize: 19,
         fontFamily: 'Inter_700Bold',
         color: '#1C1E21',
         marginBottom: 4,
     },
     statLabel: {
-        fontSize: 13,
+        fontSize: 11.5,
         fontFamily: 'Inter_400Regular',
         color: '#65676B',
     },
@@ -138,7 +139,7 @@ export const profilePageStyles = StyleSheet.create({
         marginBottom: 20,
     },
     sectionTitle: {
-        fontSize: 18,
+        fontSize: 19,
         fontFamily: 'Inter_700Bold',
         color: '#1C1E21',
         marginBottom: 16,

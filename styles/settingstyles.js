@@ -26,7 +26,7 @@ export const settingsPageStyles = StyleSheet.create({
 
     card: {
         backgroundColor: "#fff",
-        borderRadius: width * 0.04,
+        borderRadius: width * 0.06,
         padding: width * 0.04,
         marginBottom: height * 0.015,
 
@@ -34,7 +34,7 @@ export const settingsPageStyles = StyleSheet.create({
         shadowOpacity: 0.08,
         shadowRadius: 6,
         shadowOffset: { width: 0, height: 3 },
-        elevation: 3,
+        elevation: 4,
     },
 
     row: {
@@ -44,25 +44,22 @@ export const settingsPageStyles = StyleSheet.create({
 
     textContainer: {
         flex: 1,
-        marginLeft: width * 0.03,
+        marginLeft: width * 0.0,
     },
 
     profileImage: {
-        width: width * 0.14,
-        height: width * 0.14,
+        width: width * 0.135,
+        height: width * 0.135,
         borderRadius: (width * 0.14) / 2,
+        marginLeft: width * 0.0,
     },
 
-    name: {
-        fontSize: width * 0.045,
+    Text: {
+        fontSize: width * 0.059,
         fontFamily: "Inter_600SemiBold",
+        textAlign: "center",
     },
 
-    subText: {
-        fontSize: width * 0.03,
-        color: "#888",
-        fontFamily: "Inter_400Regular",
-    },
 
     optionText: {
         flex: 1,

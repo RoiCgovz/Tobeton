@@ -28,7 +28,7 @@ export default function CreateFoldersPage(){
 
                 {/* HEADER */}
                 <View style={createFolderStyles.header}>
-                    <TouchableOpacity onPress={() => router.push("/(tabs)/folders")}>
+                    <TouchableOpacity onPress={() => router.back()}>
                         <Image
                             source={require("../../assets/icons/icons8-back-100.png")}
                             style={createFolderStyles.backButton}
@@ -61,14 +61,14 @@ export default function CreateFoldersPage(){
                         multiline
                     />
                     <View style={createFolderStyles.bottomActions}>
-                        <TouchableOpacity onPress={() => router.push("/(tabs)/folders")}>
+                        <TouchableOpacity onPress={() => router.back()}>
                             <Image
                                 source={require("../../assets/icons/icons8-x-100.png")}
                                 style={createFolderStyles.xIcon}
                             />
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => router.push("/(tabs)/folders")}>
+                        <TouchableOpacity onPress={() => router.back()}>
                           <Ionicons name="checkmark-sharp" size={60} color="black" style={{ marginTop: 20 }}/>
                         </TouchableOpacity>
                     </View>
