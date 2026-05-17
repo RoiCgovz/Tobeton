@@ -1,3 +1,4 @@
+// frontend/app/settings/changeProfilePage.js
 import React, { useState, useRef, useEffect } from "react";
 import { router } from 'expo-router';
 import {
@@ -11,6 +12,8 @@ import {
     KeyboardAvoidingView,
     Platform,
     BackHandler,
+    ToastAndroid,
+    ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,6 +25,7 @@ import {
 } from "@expo-google-fonts/inter";
 import { Ionicons } from "@expo/vector-icons";
 import { changeProfileStyles } from "../../styles/changeprofilestyles";
+import authService from '../../services/authService';
 
 const { width, height } = Dimensions.get("window");
 
@@ -32,6 +36,14 @@ export default function ChangeProfilePage() {
         Inter_700Bold,
     });
 
+    // Form states
+    const [newUsername, setNewUsername] = useState("");
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    
+    // Password visibility states
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -43,6 +55,18 @@ export default function ChangeProfilePage() {
     const newPasswordRef = useRef();
     const confirmPasswordRef = useRef();
 
+    // Load current username
+    useEffect(() => {
+        loadCurrentUsername();
+    }, []);
+
+    const loadCurrentUsername = async () => {
+        const username = await authService.getUsername();
+        if (username) {
+            setNewUsername(username);
+        }
+    };
+
     if (!fontsLoaded) return null;
 
     const goBackToSettings = () => {
@@ -53,10 +77,10 @@ export default function ChangeProfilePage() {
     useEffect(() => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             goBackToSettings();
-            return true; // Prevent default behavior (exiting app)
+            return true;
         });
 
-        return () => backHandler.remove(); // Cleanup
+        return () => backHandler.remove();
     }, []);
 
     const handleInputFocus = (ref) => {
@@ -69,6 +93,105 @@ export default function ChangeProfilePage() {
                 () => {}
             );
         }, 100);
+    };
+
+    // Update Username Function
+    const handleUpdateUsername = async () => {
+        if (!newUsername.trim()) {
+            ToastAndroid.show("Please enter a username", ToastAndroid.SHORT);
+            return false;
+        }
+
+        if (newUsername.length < 3) {
+            ToastAndroid.show("Username must be at least 3 characters", ToastAndroid.SHORT);
+            return false;
+        }
+
+        setLoading(true);
+        const result = await authService.updateUsername(newUsername.trim());
+        setLoading(false);
+
+        if (result.success) {
+            ToastAndroid.show(result.message || "Username updated successfully!", ToastAndroid.SHORT);
+            return true;
+        } else {
+            ToastAndroid.show(result.error || "Failed to update username", ToastAndroid.LONG);
+            return false;
+        }
+    };
+
+    // Update Password Function
+    const handleUpdatePassword = async () => {
+        if (!oldPassword) {
+            ToastAndroid.show("Please enter your current password", ToastAndroid.SHORT);
+            return false;
+        }
+
+        if (!newPassword) {
+            ToastAndroid.show("Please enter a new password", ToastAndroid.SHORT);
+            return false;
+        }
+
+        if (newPassword.length < 4) {
+            ToastAndroid.show("Password must be at least 4 characters", ToastAndroid.SHORT);
+            return false;
+        }
+
+        if (newPassword !== confirmPassword) {
+            ToastAndroid.show("New passwords do not match", ToastAndroid.SHORT);
+            return false;
+        }
+
+        if (oldPassword === newPassword) {
+            ToastAndroid.show("New password must be different from current password", ToastAndroid.SHORT);
+            return false;
+        }
+
+        setLoading(true);
+        const result = await authService.updatePassword(oldPassword, newPassword);
+        setLoading(false);
+
+        if (result.success) {
+            ToastAndroid.show(result.message || "Password updated successfully!", ToastAndroid.SHORT);
+            // Clear password fields
+            setOldPassword("");
+            setNewPassword("");
+            setConfirmPassword("");
+            return true;
+        } else {
+            ToastAndroid.show(result.error || "Failed to update password", ToastAndroid.LONG);
+            return false;
+        }
+    };
+
+    // Handle Update Profile (both username and password if provided)
+    const handleUpdateProfile = async () => {
+        let usernameSuccess = true;
+        let passwordSuccess = true;
+
+        // Check if username was changed
+        const currentUsername = await authService.getUsername();
+        if (newUsername !== currentUsername) {
+            usernameSuccess = await handleUpdateUsername();
+        }
+
+        // Check if password update is requested
+        if (oldPassword || newPassword || confirmPassword) {
+            passwordSuccess = await handleUpdatePassword();
+        }
+
+        // If nothing was updated
+        if (newUsername === currentUsername && !oldPassword && !newPassword && !confirmPassword) {
+            ToastAndroid.show("No changes to update", ToastAndroid.SHORT);
+            return;
+        }
+
+        // Go back if at least one update succeeded
+        if (usernameSuccess || passwordSuccess) {
+            setTimeout(() => {
+                goBackToSettings();
+            }, 1500);
+        }
     };
 
     return (
@@ -85,9 +208,7 @@ export default function ChangeProfilePage() {
                     showsVerticalScrollIndicator={false}
                     keyboardShouldPersistTaps="handled"
                 >
-                    {/* Wrapper for banner and buttons */}
                     <View style={{ position: 'relative' }}>
-                        {/* Banner - Pressable */}
                         <TouchableOpacity
                             style={changeProfileStyles.bannerContainer}
                             onPress={() => console.log('Banner pressed')}
@@ -99,7 +220,6 @@ export default function ChangeProfilePage() {
                             />
                         </TouchableOpacity>
 
-                        {/* Back Button - Positioned absolutely */}
                         <TouchableOpacity
                             style={changeProfileStyles.backButton}
                             onPress={goBackToSettings}
@@ -108,7 +228,6 @@ export default function ChangeProfilePage() {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Profile Circle - Same as profile page */}
                     <View style={changeProfileStyles.profileIconContainer}>
                         <View style={changeProfileStyles.profileCircleWrapper}>
                             <TouchableOpacity
@@ -124,7 +243,6 @@ export default function ChangeProfilePage() {
                         </View>
                     </View>
 
-                    {/* Form Fields Section */}
                     <View style={changeProfileStyles.formContainer}>
                         <Text style={changeProfileStyles.sectionTitle}>Change Profile</Text>
                         
@@ -137,11 +255,14 @@ export default function ChangeProfilePage() {
                                 placeholder="Enter new username"
                                 placeholderTextColor="#999"
                                 autoCapitalize="none"
+                                value={newUsername}
+                                onChangeText={setNewUsername}
+                                editable={!loading}
                                 onFocus={() => handleInputFocus(usernameRef)}
                             />
                         </View>
 
-                        {/* Old Password with visibility toggle */}
+                        {/* Old Password */}
                         <View style={changeProfileStyles.inputGroup}>
                             <Text style={changeProfileStyles.inputLabel}>Old Password</Text>
                             <View style={changeProfileStyles.passwordContainer}>
@@ -152,6 +273,9 @@ export default function ChangeProfilePage() {
                                     placeholderTextColor="#999"
                                     secureTextEntry={!showOldPassword}
                                     autoCapitalize="none"
+                                    value={oldPassword}
+                                    onChangeText={setOldPassword}
+                                    editable={!loading}
                                     onFocus={() => handleInputFocus(oldPasswordRef)}
                                 />
                                 <TouchableOpacity
@@ -167,7 +291,7 @@ export default function ChangeProfilePage() {
                             </View>
                         </View>
 
-                        {/* New Password with visibility toggle */}
+                        {/* New Password */}
                         <View style={changeProfileStyles.inputGroup}>
                             <Text style={changeProfileStyles.inputLabel}>New Password</Text>
                             <View style={changeProfileStyles.passwordContainer}>
@@ -178,6 +302,9 @@ export default function ChangeProfilePage() {
                                     placeholderTextColor="#999"
                                     secureTextEntry={!showNewPassword}
                                     autoCapitalize="none"
+                                    value={newPassword}
+                                    onChangeText={setNewPassword}
+                                    editable={!loading}
                                     onFocus={() => handleInputFocus(newPasswordRef)}
                                 />
                                 <TouchableOpacity
@@ -193,7 +320,7 @@ export default function ChangeProfilePage() {
                             </View>
                         </View>
 
-                        {/* Confirm Password with visibility toggle */}
+                        {/* Confirm Password */}
                         <View style={changeProfileStyles.inputGroup}>
                             <Text style={changeProfileStyles.inputLabel}>Confirm Password</Text>
                             <View style={changeProfileStyles.passwordContainer}>
@@ -204,6 +331,9 @@ export default function ChangeProfilePage() {
                                     placeholderTextColor="#999"
                                     secureTextEntry={!showConfirmPassword}
                                     autoCapitalize="none"
+                                    value={confirmPassword}
+                                    onChangeText={setConfirmPassword}
+                                    editable={!loading}
                                     onFocus={() => handleInputFocus(confirmPasswordRef)}
                                 />
                                 <TouchableOpacity
@@ -221,16 +351,17 @@ export default function ChangeProfilePage() {
 
                         {/* Update Button */}
                         <TouchableOpacity 
-                            style={changeProfileStyles.updateButton}
-                            onPress={() => {
-                                console.log('Profile updated');
-                                goBackToSettings();
-                            }}
+                            style={[changeProfileStyles.updateButton, loading && { opacity: 0.7 }]}
+                            onPress={handleUpdateProfile}
+                            disabled={loading}
                         >
-                            <Text style={changeProfileStyles.updateButtonText}>Update Profile</Text>
+                            {loading ? (
+                                <ActivityIndicator color="#FFF" />
+                            ) : (
+                                <Text style={changeProfileStyles.updateButtonText}>Update Profile</Text>
+                            )}
                         </TouchableOpacity>
                     </View>
-                    {/* Removed extra space at bottom */}
                 </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>

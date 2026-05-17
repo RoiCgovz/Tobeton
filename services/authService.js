@@ -8,11 +8,9 @@ class AuthService {
       const response = await api.login(username, password);
       
       if (response.token) {
-        // Store token and user data
         await AsyncStorage.setItem('userToken', response.token);
         await AsyncStorage.setItem('username', username);
         
-        // Store user ID if returned
         if (response.userId) {
           await AsyncStorage.setItem('userId', response.userId.toString());
         }
@@ -43,6 +41,72 @@ class AuthService {
         success: true, 
         data: response,
         message: response.message || 'Registration successful'
+      };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.message 
+      };
+    }
+  }
+
+  // ADD THIS - Update Username
+  async updateUsername(newUsername) {
+    try {
+      const userId = await this.getUserId();
+      if (!userId) {
+        return { 
+          success: false, 
+          error: 'User not logged in' 
+        };
+      }
+
+      const response = await api.updateUsername(userId, newUsername);
+      
+      if (response.message) {
+        // Update stored username
+        await AsyncStorage.setItem('username', newUsername);
+        return { 
+          success: true, 
+          message: response.message 
+        };
+      }
+      
+      return { 
+        success: false, 
+        error: 'Failed to update username' 
+      };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.message 
+      };
+    }
+  }
+
+  // ADD THIS - Update Password
+  async updatePassword(currentPassword, newPassword) {
+    try {
+      const userId = await this.getUserId();
+      if (!userId) {
+        return { 
+          success: false, 
+          error: 'User not logged in' 
+        };
+      }
+
+      const response = await api.updatePassword(userId, currentPassword, newPassword);
+      
+      if (response.message) {
+        return { 
+          success: true, 
+          message: response.message 
+        };
+      }
+      
+      return { 
+        success: false, 
+        error: 'Failed to update password' 
       };
     } catch (error) {
       return { 
