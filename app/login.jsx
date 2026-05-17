@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-import Svg, { Polygon } from "react-native-svg";
-import { View,Text,TouchableOpacity,TextInput,ToastAndroid,Image,Dimensions} from "react-native";
+import { View, Text, TouchableOpacity, TextInput, ToastAndroid, Image, Dimensions, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useFonts } from "expo-font";
-import { Inter_400Regular,Inter_600SemiBold,Inter_700Bold,} from "@expo-google-fonts/inter";
+import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from "@expo-google-fonts/inter";
 import { loginStyles } from "../styles/loginstyles";
+import authService from '../services/authService';
+import Svg, { Polygon } from "react-native-svg";
 
 const { width, height } = Dimensions.get("window");
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -21,28 +23,33 @@ export default function Login() {
 
   if (!fontsLoaded) return null;
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (username === "" || password === "") {
       ToastAndroid.show(
-        "Username and password empty, Please enter username and password",
+        "Please enter username and password",
         ToastAndroid.SHORT
       );
       return;
     }
 
-    if (username === "admin123" && password === "123" || 1) {
-      router.push("/mainpage");
+    setLoading(true);
+
+    const result = await authService.login(username, password);
+    
+    if (result.success) {
       ToastAndroid.show(
         `Login Successful! Welcome ${username}`,
         ToastAndroid.SHORT
       );
-    }
-    if (username !== "admin123" && password !== "123" && 0) {
+      router.push("/mainpage");
+    } else {
       ToastAndroid.show(
-        `Account not found`,
-        ToastAndroid.SHORT
+        result.error || "Login failed. Please check your credentials.",
+        ToastAndroid.LONG
       );
     }
+    
+    setLoading(false);
   };
 
   return (
@@ -119,8 +126,11 @@ export default function Login() {
           <TouchableOpacity
             style={loginStyles.loginButton}
             onPress={handleLogin}
+            disabled={loading}
           >
-            <Text style={loginStyles.buttonText}>Login</Text>
+            <Text style={loginStyles.buttonText}>
+              {loading ? "Logging in..." : "Login"}
+            </Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
