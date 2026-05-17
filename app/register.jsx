@@ -8,6 +8,7 @@ import {
   ToastAndroid,
   Image,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -18,6 +19,7 @@ import {
   Inter_700Bold,
 } from "@expo-google-fonts/inter";
 import { regStyles } from "../styles/regstyles";
+import authService from '../services/authService'; // 👈 IMPORT AUTH SERVICE
 
 const { width, height } = Dimensions.get("window");
 
@@ -25,6 +27,7 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false); // 👈 ADD LOADING STATE
 
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -34,7 +37,8 @@ export default function Register() {
 
   if (!fontsLoaded) return null;
 
-  const handleRegister = () => {
+  const handleRegister = async () => { // 👈 MAKE ASYNC
+    // Validate inputs
     if (!username || !password || !confirmPassword) {
       ToastAndroid.show(
         "Please fill in all fields",
@@ -51,12 +55,42 @@ export default function Register() {
       return;
     }
 
-    ToastAndroid.show(
-      `Account created for ${username}`,
-      ToastAndroid.SHORT
-    );
+    if (password.length < 4) {
+      ToastAndroid.show(
+        "Password must be at least 4 characters",
+        ToastAndroid.SHORT
+      );
+      return;
+    }
 
-    router.push("/login");
+    setLoading(true); // 👈 START LOADING
+
+    try {
+      // 👈 CALL BACKEND REGISTER
+      const result = await authService.register(username, password);
+      
+      if (result.success) {
+        ToastAndroid.show(
+          result.message || `Account created for ${username}! Please login.`,
+          ToastAndroid.LONG
+        );
+        // Navigate to login screen
+        router.push("/login");
+      } else {
+        ToastAndroid.show(
+          result.error || "Registration failed. Please try again.",
+          ToastAndroid.LONG
+        );
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      ToastAndroid.show(
+        "Network error. Please check your connection.",
+        ToastAndroid.LONG
+      );
+    } finally {
+      setLoading(false); // 👈 STOP LOADING
+    }
   };
 
   return (
@@ -89,6 +123,7 @@ export default function Register() {
         <TouchableOpacity
           style={regStyles.topLeftButton}
           onPress={() => router.push("/")}
+          disabled={loading}
         >
           <Image
             source={require("../assets/icons/ic_left_arrow.png")}
@@ -110,6 +145,7 @@ export default function Register() {
             value={username}
             placeholder="Username"
             placeholderTextColor="rgba(120,120,120,0.4)"
+            editable={!loading}
           />
 
           <TextInput
@@ -119,6 +155,7 @@ export default function Register() {
             secureTextEntry
             placeholder="Password"
             placeholderTextColor="rgba(120,120,120,0.4)"
+            editable={!loading}
           />
 
           <TextInput
@@ -128,6 +165,7 @@ export default function Register() {
             secureTextEntry
             placeholder="Confirm Password"
             placeholderTextColor="rgba(120,120,120,0.4)"
+            editable={!loading}
           />
         </View>
 
@@ -136,8 +174,11 @@ export default function Register() {
           <TouchableOpacity
             style={regStyles.regButton}
             onPress={handleRegister}
+            disabled={loading}
           >
-            <Text style={regStyles.buttonText}>Register</Text>
+            <Text style={regStyles.buttonText}>
+              {loading ? "Creating Account..." : "Register"}
+            </Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
