@@ -11,16 +11,12 @@ const getBaseUrl = () => {
 
   // For development
   if (Platform.OS === 'android') {
-    // Android Emulator
-    return 'http://10.0.2.2:5000';
-    // For Android physical device, use your computer's IP
-    // return 'http://192.168.1.100:5000';
+    // For Android physical device - USE YOUR IP
+    return 'http://192.168.1.2:5000';
   }
   
   // iOS Simulator or physical device
   return 'http://localhost:5000';
-  // For iOS physical device, use your computer's IP
-  // return 'http://192.168.1.100:5000';
 };
 
 const API_BASE_URL = getBaseUrl();
