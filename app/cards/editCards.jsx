@@ -28,7 +28,7 @@ export default function EditCardsPage(){
 
                 {/* HEADER */}
                 <View style={editCardStyles.header}>
-                    <TouchableOpacity onPress={() => router.push("/folders/cards")}>
+                    <TouchableOpacity onPress={() => router.back()}>
                         <Image
                             source={require("../../assets/icons/icons8-back-100.png")}
                             style={editCardStyles.backButton}
@@ -61,14 +61,14 @@ export default function EditCardsPage(){
                         multiline
                     />
                     <View style={editCardStyles.bottomActions}>
-                        <TouchableOpacity onPress={() => router.push("/folders/cards")}>
+                        <TouchableOpacity onPress={() => router.back()}>
                             <Image
                                 source={require("../../assets/icons/icons8-x-100.png")}
                                 style={editCardStyles.xIcon}
                             />
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => router.push("/folders/cards")}>
+                        <TouchableOpacity onPress={() => router.back()}>
                           <Ionicons name="checkmark-sharp" size={60} color="black" style={{ marginTop: 20 }}/>
                         </TouchableOpacity>
                     </View>

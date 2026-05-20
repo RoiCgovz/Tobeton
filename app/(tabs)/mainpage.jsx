@@ -7,6 +7,7 @@ import { useFonts } from "expo-font";
 import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold, } from "@expo-google-fonts/inter";
 import { mainPageStyles } from "../../styles/mainpagestyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 
 const { width, height } = Dimensions.get("window");
@@ -92,7 +93,7 @@ export default function MainPage() {
           {/* HEADER */}
           <View style={mainPageStyles.profileContainer}>
             <View style={mainPageStyles.leftSection}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/profile")}>
                 <Image
                   source={require("../../assets/icons/profilepic.png")}
                   style={mainPageStyles.profileImage}
@@ -119,17 +120,18 @@ export default function MainPage() {
           <View style={mainPageStyles.mainRow}>
 
             {/* Icon Column */}
-            <View style={mainPageStyles.iconColumn}>
+           <View style={mainPageStyles.iconColumn}>
               {icons.map((item, index) => (
                 <TouchableOpacity
                   key={index}
                   style={mainPageStyles.iconBox}
-                  onPress={item.action}
+                  onPress={() => {
+                    if (index === 0) {
+                      router.push("/profile/achievement");
+                    }
+                  }}
                 >
-                  <Image
-                    source={item.icon}
-                    style={mainPageStyles.iconImage}
-                  />
+                  <Image source={item.icon} style={mainPageStyles.iconImage} />
                 </TouchableOpacity>
               ))}
             </View>
