@@ -129,35 +129,120 @@ export const folderPageStyles = StyleSheet.create({
   },
 
   gridContainer: {
-  flexDirection: "row",
-  flexWrap: "wrap",
-  justifyContent: "space-between",
-},
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
 
-gridCard: {
-  width: "48%",
-  height: height * 0.18,
-  backgroundColor: "#fff",
-  borderRadius: 10,
-  borderWidth: 2,
-  borderColor: "#000",
-  marginBottom: 10,
-  padding: 15,
-  justifyContent: "center",
-  elevation: 6,
-},
+  gridCard: {
+    width: "48%",
+    height: height * 0.18,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#000",
+    marginBottom: 10,
+    padding: 15,
+    justifyContent: "center",
+    elevation: 6,
+  },
 
-listCard: {
-  flexDirection: "row",
-  width: "100%",
-  height: height * 0.10,
-  backgroundColor: "#fff",
-  borderRadius: 10,
-  borderWidth: 2,
-  borderColor: "#000",
-  marginBottom: 10,
-  padding: 15,
-  justifyContent: "center",
-  elevation: 6,
-},
+  listCard: {
+    flexDirection: "row",
+    width: "100%",
+    height: height * 0.10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#000",
+    marginBottom: 10,
+    padding: 15,
+    justifyContent: "center",
+    elevation: 6,
+  },
+
+  // Add these to your existing styles
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 50,
+  },
+
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#666",
+    fontFamily: "Inter_400Regular",
+  },
+
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 50,
+  },
+
+  emptyText: {
+    fontSize: 16,
+    color: "#999",
+    textAlign: "center",
+    fontFamily: "Inter_400Regular",
+  },
+
+  difficultyBadge: {
+    backgroundColor: "#E8E6FF",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: "flex-start",
+    marginTop: 8,
+  },
+
+  difficultyBadgeText: {
+    fontSize: 10,
+    color: "#6C63FF",
+    fontFamily: "Inter_600SemiBold",
+  },
+
+  difficultyBadgeSmall: {
+    backgroundColor: "#E8E6FF",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+
+  difficultyBadgeTextSmall: {
+    fontSize: 9,
+    color: "#6C63FF",
+    fontFamily: "Inter_600SemiBold",
+  },
+
+  listItemContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  listItemLeft: {
+    flex: 2,
+  },
+
+  listItemRight: {
+    alignItems: "flex-end",
+  },
+
+  cardCount: {
+    fontSize: 12,
+    color: "#666",
+    fontFamily: "Inter_600SemiBold",
+    marginBottom: 4,
+  },
+
+  cardStats: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+  },
 });
