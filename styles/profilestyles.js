@@ -173,14 +173,14 @@ export const profilePageStyles = StyleSheet.create({
         marginBottom: 12,
     },
     cardTitle: {
-        fontSize: 14,
+        fontSize: 13,
         fontFamily: 'Inter_600SemiBold',
         color: '#1C1E21',
         marginBottom: 4,
         textAlign: 'center',
     },
     cardSubtitle: {
-        fontSize: 12,
+        fontSize: 11.5,
         fontFamily: 'Inter_400Regular',
         color: '#65676B',
         textAlign: 'center',

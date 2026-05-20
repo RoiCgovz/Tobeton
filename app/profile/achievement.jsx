@@ -68,7 +68,7 @@ export default function AchievementPage() {
     const renderItem = ({ item }) => <AchievementCard item={item} />;
 
     const goBackToProfile = () => {
-        router.dismissTo('/profile');
+        router.back();
     };
 
     // Handle Android hardware back button
