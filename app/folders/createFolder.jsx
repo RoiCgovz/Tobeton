@@ -70,7 +70,7 @@ export default function CreateFoldersPage(){
 
                 {/* HEADER */}
                 <View style={createFolderStyles.header}>
-                    <TouchableOpacity onPress={() => router.push("/(tabs)/folders")}>
+                    <TouchableOpacity onPress={() => router.back()}>
                         <Image
                             source={require("../../assets/icons/icons8-back-100.png")}
                             style={createFolderStyles.backButton}

@@ -78,6 +78,9 @@ export default {
   register: (username, password) =>
     apiRequest('/auth/register', 'POST', { username, password }, false),
 
+  get: (endpoint) =>
+    apiRequest(endpoint, 'GET', null, true),
+
   // User endpoints (auth required)
   updateUsername: (userId, newUsername) =>
     apiRequest('/users/update-username', 'PUT', { userId, newUsername }, true),

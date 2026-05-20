@@ -56,7 +56,7 @@ export default function CardsPage() {
                         <Ionicons name="chevron-back" size={28} color="black" />
                     </TouchableOpacity>
                     <Text style={cardPageStyles.title}>
-                        {folderName ? String(folderName) : "Comprog"}
+                        {folderName ? String(folderName) : "Comorg"}
                     </Text>
                     <TouchableOpacity onPress={() => router.push("/cards/createCards")}>
                         <Ionicons name="add-outline" size={40} color="black" />
@@ -68,13 +68,13 @@ export default function CardsPage() {
                 <Text style={cardPageStyles.sectionTitle}>Learn</Text>
                 <View style={cardPageStyles.learnRow}>
                     <TouchableOpacity style={cardPageStyles.learnBox}
-                        onPress={() => 
+                        onPress={() =>
                             router.push({
-                                pathname: "/folders/quiz", 
-                                params: { folderName: folderName }, 
-                            })                                                  
+                                pathname: "/folders/quiz",
+                                params: { folderName: folderName },
+                            })
                         }
-                        >
+                    >
                         <MaterialCommunityIcons name="file-document-outline" size={45} color="black" />
                         <View style={cardPageStyles.clockOverlay}>
                             <MaterialCommunityIcons name="clock-outline" size={16} color="black" />
@@ -83,13 +83,13 @@ export default function CardsPage() {
 
                     <TouchableOpacity
                         style={cardPageStyles.learnBox}
-                        onPress={() => 
+                        onPress={() =>
                             router.push({
-                                pathname: "/folders/flashcards", 
-                                params: { folderName: folderName }, 
-                            })                                                  
+                                pathname: "/folders/flashcards",
+                                params: { folderName: folderName },
+                            })
                         }
-                        >
+                    >
                         <View style={cardPageStyles.cardIconStack}>
                             <MaterialCommunityIcons name="cards-playing-outline" size={50} color="black" />
                             <Text style={cardPageStyles.cardIconNumber}>1</Text>
