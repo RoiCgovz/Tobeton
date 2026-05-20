@@ -147,20 +147,56 @@ export const folderPageStyles = StyleSheet.create({
     elevation: 6,
   },
 
+  // List View Styles - Add these to your existing styles
   listCard: {
-    flexDirection: "row",
-    width: "100%",
-    height: height * 0.10,
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 2,
     borderColor: "#000",
-    marginBottom: 10,
-    padding: 15,
-    justifyContent: "center",
+    marginBottom: 12,
+    padding: 16,
     elevation: 6,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
   },
 
+  listCardContent: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+
+  listFolderTitle: {
+    fontSize: 20,
+    fontFamily: "Inter_700Bold",
+    color: "#000",
+    marginBottom: 12,
+  },
+
+  listCardFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+
+  listCardCount: {
+    fontSize: 14,
+    color: "#666",
+    fontFamily: "Inter_600SemiBold",
+  },
+
+  listDifficultyBadge: {
+    backgroundColor: "#E8E6FF",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+
+  listDifficultyText: {
+    fontSize: 12,
+    color: "#6C63FF",
+    fontFamily: "Inter_600SemiBold",
+  },
   // Add these to your existing styles
   loadingContainer: {
     flex: 1,

@@ -46,7 +46,7 @@ export default function FolderPage() {
     const loadFolders = async () => {
         setLoading(true);
         const result = await folderService.getFolders();
-        
+
         if (result.success) {
             setFolders(result.data);
         } else {
@@ -55,7 +55,7 @@ export default function FolderPage() {
                 ToastAndroid.LONG
             );
         }
-        
+
         setLoading(false);
     };
 
@@ -132,7 +132,7 @@ export default function FolderPage() {
                             </Text>
                         </View>
                     ) : (
-                        <ScrollView 
+                        <ScrollView
                             showsVerticalScrollIndicator={false}
                             refreshControl={
                                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -148,9 +148,9 @@ export default function FolderPage() {
                                             onPress={() =>
                                                 router.push({
                                                     pathname: "/folders/cards",
-                                                    params: { 
+                                                    params: {
                                                         folderId: folder.id,
-                                                        folderName: folder.folder_name 
+                                                        folderName: folder.folder_name
                                                     },
                                                 })
                                             }
@@ -182,29 +182,27 @@ export default function FolderPage() {
                                             onPress={() =>
                                                 router.push({
                                                     pathname: "/folders/cards",
-                                                    params: { 
+                                                    params: {
                                                         folderId: folder.id,
-                                                        folderName: folder.folder_name 
+                                                        folderName: folder.folder_name
                                                     },
                                                 })
                                             }
                                         >
-                                            <View style={folderPageStyles.listItemContent}>
-                                                <View style={folderPageStyles.listItemLeft}>
-                                                    <Text style={folderPageStyles.folderTitle}>
-                                                        {folder.folder_name}
+                                            <View style={folderPageStyles.listCardContent}>
+                                                {/* Folder Name - Top Left */}
+                                                <Text style={folderPageStyles.listFolderTitle}>
+                                                    {folder.folder_name}
+                                                </Text>
+
+                                                {/* Card Count and Difficulty - Bottom Left */}
+                                                <View style={folderPageStyles.listCardFooter}>
+                                                    <Text style={folderPageStyles.listCardCount}>
+                                                        📄 {folder.card_quantity || 0} cards
                                                     </Text>
-                                                    <Text style={folderPageStyles.folderSubText}>
-                                                        {folder.subject} • {folder.topic}
-                                                    </Text>
-                                                </View>
-                                                <View style={folderPageStyles.listItemRight}>
-                                                    <Text style={folderPageStyles.cardCount}>
-                                                        {folder.card_quantity || 0} cards
-                                                    </Text>
-                                                    <View style={folderPageStyles.difficultyBadgeSmall}>
-                                                        <Text style={folderPageStyles.difficultyBadgeTextSmall}>
-                                                            {folder.difficulty}
+                                                    <View style={folderPageStyles.listDifficultyBadge}>
+                                                        <Text style={folderPageStyles.listDifficultyText}>
+                                                            {folder.difficulty || "Beginner"}
                                                         </Text>
                                                     </View>
                                                 </View>
@@ -222,9 +220,9 @@ export default function FolderPage() {
                                             onPress={() =>
                                                 router.push({
                                                     pathname: "/folders/cards",
-                                                    params: { 
+                                                    params: {
                                                         folderId: folder.id,
-                                                        folderName: folder.folder_name 
+                                                        folderName: folder.folder_name
                                                     },
                                                 })
                                             }
@@ -262,7 +260,7 @@ export default function FolderPage() {
                         <Text style={folderPageStyles.plus}>+</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={folderPageStyles.squareBtn}
                         onPress={onRefresh}
                     >
@@ -275,15 +273,15 @@ export default function FolderPage() {
                         onPress={() => {
                             if (layout === "scroll") {
                                 setLayout("list")
-                                ToastAndroid.show("List View", ToastAndroid.SHORT);
+                                //ToastAndroid.show("List View", ToastAndroid.SHORT);
                             }
-                            else if (layout === "list"){
+                            else if (layout === "list") {
                                 setLayout("grid")
-                                ToastAndroid.show("Grid View", ToastAndroid.SHORT);
+                                //ToastAndroid.show("Grid View", ToastAndroid.SHORT);
                             }
                             else {
                                 setLayout("scroll")
-                                ToastAndroid.show("Scroll View", ToastAndroid.SHORT);
+                                //ToastAndroid.show("Scroll View", ToastAndroid.SHORT);
                             }
                         }}
                     >
