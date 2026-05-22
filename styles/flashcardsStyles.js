@@ -190,14 +190,14 @@ export const flashcardsStyles = StyleSheet.create({
   headerIcons: {
     flexDirection: 'row',
     alignItems: 'center',
-},
+  },
 
-modeIndicator: {
+  modeIndicator: {
     alignItems: 'center',
     marginBottom: 5,
-},
+  },
 
-modeText: {
+  modeText: {
     fontSize: 12,
     fontFamily: 'Inter_600SemiBold',
     color: '#6C63FF',
@@ -205,42 +205,42 @@ modeText: {
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 20,
-},
+  },
 
-modalOverlay: {
+  modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
-},
+  },
 
-modalContent: {
+  modalContent: {
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
     maxHeight: height * 0.8,
-},
+  },
 
-modalHeader: {
+  modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
-},
+  },
 
-modalTitle: {
+  modalTitle: {
     fontSize: 20,
     fontFamily: 'Inter_700Bold',
     color: 'black',
-},
+  },
 
-searchInputContainer: {
+  searchInputContainer: {
     flexDirection: 'row',
     gap: 10,
     marginBottom: 20,
-},
+  },
 
-searchInput: {
+  searchInput: {
     flex: 1,
     height: 50,
     backgroundColor: '#F5F5F5',
@@ -248,48 +248,63 @@ searchInput: {
     paddingHorizontal: 15,
     fontFamily: 'Inter_400Regular',
     fontSize: 16,
-},
+  },
 
-searchButton: {
+  searchButton: {
     backgroundColor: '#6C63FF',
     width: 50,
     height: 50,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-},
+  },
 
-searchResults: {
+  searchResults: {
     maxHeight: height * 0.5,
-},
+  },
 
-searchResultItem: {
+  searchResultItem: {
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#EEE',
-},
+  },
 
-searchResultQuestion: {
+  searchResultQuestion: {
     fontSize: 16,
     fontFamily: 'Inter_600SemiBold',
     color: 'black',
     marginBottom: 5,
-},
+  },
 
-searchResultAnswer: {
+  searchResultAnswer: {
     fontSize: 14,
     fontFamily: 'Inter_400Regular',
     color: '#666',
-},
+  },
 
-noResultsContainer: {
+  noResultsContainer: {
     padding: 40,
     alignItems: 'center',
-},
+  },
 
-noResultsText: {
+  noResultsText: {
     fontSize: 16,
     color: '#999',
     fontFamily: 'Inter_400Regular',
-},
+  },
+  searchResultCount: {
+    fontSize: 14,
+    fontFamily: 'Inter_600SemiBold',
+    color: '#666',
+    marginBottom: 10,
+    paddingHorizontal: 5,
+  },
+
+  noResultsSubText: {
+    fontSize: 14,
+    fontFamily: 'Inter_400Regular',
+    color: '#bbb',
+    marginTop: 8,
+    textAlign: 'center',
+  },
 });

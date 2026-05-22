@@ -132,20 +132,43 @@ export default function FlashcardsPage() {
     isFlipped.value = 0;
   };
 
-  // Search flashcards
-  const handleSearch = async () => {
+  // Auto-search while typing (real-time)
+  const handleSearchChange = (text) => {
+    setSearchQuery(text);
+
+    if (text.trim() === "") {
+      setSearchResults([]);
+      return;
+    }
+
+    // Search within the already loaded cards
+    const results = cards.filter(card =>
+      card.question?.toLowerCase().includes(text.toLowerCase()) ||
+      card.answer?.toLowerCase().includes(text.toLowerCase())
+    );
+
+    setSearchResults(results);
+  };
+
+  // Manual search on submit (optional, for keyboard search button)
+  const handleSearchSubmit = () => {
     if (!searchQuery.trim()) {
       ToastAndroid.show("Enter a search term", ToastAndroid.SHORT);
       return;
     }
 
-    const result = await flashcardService.searchFlashcards(searchQuery);
-    if (result.success && result.data.length > 0) {
-      setSearchResults(result.data);
-    } else {
+    if (searchResults.length === 0) {
       ToastAndroid.show("No matching flashcards found", ToastAndroid.SHORT);
-      setSearchResults([]);
+    } else {
+      ToastAndroid.show(`Found ${searchResults.length} card(s)`, ToastAndroid.SHORT);
     }
+  };
+
+  // Clear search and close modal
+  const closeSearchModal = () => {
+    setSearchModalVisible(false);
+    setSearchQuery("");
+    setSearchResults([]);
   };
 
   // Jump to a specific card from search
@@ -154,11 +177,10 @@ export default function FlashcardsPage() {
     if (cardIndex !== -1) {
       setIndex(cardIndex);
       isFlipped.value = 0;
-      setSearchModalVisible(false);
-      setSearchQuery("");
+      closeSearchModal();
       ToastAndroid.show("Jumped to card", ToastAndroid.SHORT);
     } else {
-      ToastAndroid.show("Card not in current list", ToastAndroid.SHORT);
+      ToastAndroid.show("Card not found", ToastAndroid.SHORT);
     }
   };
 
@@ -327,7 +349,7 @@ export default function FlashcardsPage() {
             </View>
           ) : cards.length === 0 ? (
             <View style={flashcardsStyles.emptyContainer}>
-              <Ionicons name="albums-outline" size={80} color="#ccc" />S
+              <Ionicons name="albums-outline" size={80} color="#ccc" />
               <Text style={flashcardsStyles.emptyText}>No flashcards in this folder</Text>
               <Text style={flashcardsStyles.emptySubText}>Create cards to start studying!</Text>
             </View>
@@ -397,13 +419,13 @@ export default function FlashcardsPage() {
         animationType="slide"
         transparent={true}
         visible={searchModalVisible}
-        onRequestClose={() => setSearchModalVisible(false)}
+        onRequestClose={closeSearchModal}
       >
         <View style={flashcardsStyles.modalOverlay}>
           <View style={flashcardsStyles.modalContent}>
             <View style={flashcardsStyles.modalHeader}>
-              <Text style={flashcardsStyles.modalTitle}>Search Flashcards</Text>
-              <TouchableOpacity onPress={() => setSearchModalVisible(false)}>
+              <Text style={flashcardsStyles.modalTitle}>Search Cards</Text>
+              <TouchableOpacity onPress={closeSearchModal}>
                 <Ionicons name="close" size={28} color="black" />
               </TouchableOpacity>
             </View>
@@ -414,38 +436,46 @@ export default function FlashcardsPage() {
                 placeholder="Type question or answer..."
                 placeholderTextColor="#999"
                 value={searchQuery}
-                onChangeText={setSearchQuery}
-                onSubmitEditing={handleSearch}
+                onChangeText={handleSearchChange}
+                onSubmitEditing={handleSearchSubmit}
+                autoFocus={true}
               />
-              <TouchableOpacity style={flashcardsStyles.searchButton} onPress={handleSearch}>
+              <TouchableOpacity style={flashcardsStyles.searchButton} onPress={handleSearchSubmit}>
                 <Ionicons name="search" size={24} color="white" />
               </TouchableOpacity>
             </View>
 
             {searchResults.length > 0 && (
-              <FlatList
-                data={searchResults}
-                keyExtractor={(item) => item.id.toString()}
-                style={flashcardsStyles.searchResults}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={flashcardsStyles.searchResultItem}
-                    onPress={() => jumpToCard(item.id)}
-                  >
-                    <Text style={flashcardsStyles.searchResultQuestion} numberOfLines={2}>
-                      {item.question}
-                    </Text>
-                    <Text style={flashcardsStyles.searchResultAnswer} numberOfLines={1}>
-                      {item.answer}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              />
+              <>
+                <Text style={flashcardsStyles.searchResultCount}>
+                  {searchResults.length} result(s) found
+                </Text>
+                <FlatList
+                  data={searchResults}
+                  keyExtractor={(item) => item.id.toString()}
+                  style={flashcardsStyles.searchResults}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={flashcardsStyles.searchResultItem}
+                      onPress={() => jumpToCard(item.id)}
+                    >
+                      <Text style={flashcardsStyles.searchResultQuestion} numberOfLines={2}>
+                        Q: {item.question}
+                      </Text>
+                      <Text style={flashcardsStyles.searchResultAnswer} numberOfLines={1}>
+                        A: {item.answer}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                />
+              </>
             )}
 
-            {searchResults.length === 0 && searchQuery && (
+            {searchResults.length === 0 && searchQuery !== "" && (
               <View style={flashcardsStyles.noResultsContainer}>
-                <Text style={flashcardsStyles.noResultsText}>No flashcards found</Text>
+                <Ionicons name="search-outline" size={50} color="#ccc" />
+                <Text style={flashcardsStyles.noResultsText}>No matching cards found</Text>
+                <Text style={flashcardsStyles.noResultsSubText}>Try a different search term</Text>
               </View>
             )}
           </View>
