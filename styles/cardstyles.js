@@ -10,7 +10,7 @@ export const cardPageStyles = StyleSheet.create({
     contentContainer: {
         flex: 1,
         paddingHorizontal: 25,
-        zIndex: 1, 
+        zIndex: 1,
     },
     header: {
         flexDirection: "row",
@@ -86,6 +86,44 @@ export const cardPageStyles = StyleSheet.create({
         position: 'absolute',
         bottom: 10,
         right: 10,
-    }
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingVertical: 50,
+    },
 
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: "#666",
+        fontFamily: "Inter_400Regular",
+    },
+
+    emptyContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingVertical: 50,
+    },
+
+    emptyText: {
+        fontSize: 16,
+        color: "#999",
+        textAlign: "center",
+        fontFamily: "Inter_400Regular",
+    },
+
+    cardContent: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flex: 1,
+    },
+
+    cardActions: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
 });

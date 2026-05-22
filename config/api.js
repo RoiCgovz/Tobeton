@@ -5,14 +5,14 @@ import { Platform } from 'react-native';
 // Get the correct base URL based on platform and environment
 const getBaseUrl = () => {
   // For production
-  if (!__DEV__) {
-    return 'https://your-production-server.com'; // Change to your production URL
-  }
+  // if (!__DEV__) {
+  //   return 'https://your-production-server.com'; // Change to your production URL
+  // }
 
   // For development
   if (Platform.OS === 'android') {
     // For Android physical device - USE YOUR IP
-    return 'http://10.83.2.162:5000';
+    return 'http://192.168.1.4:5000';
   }
 
   // iOS Simulator or physical device
@@ -88,9 +88,8 @@ export default {
   updatePassword: (userId, currentPassword, newPassword) =>
     apiRequest('/users/update-password', 'PUT', { userId, currentPassword, newPassword }, true),
 
-  // frontend/config/api.js - CORRECTED VERSION
 
-  // Folder endpoints - Updated to match your backend routes
+  // Folder endpoints
   getFolders: () =>
     apiRequest('/folders/get', 'GET', null, true),
 
@@ -112,19 +111,32 @@ export default {
 
   deleteFolder: (folderId) =>
     apiRequest(`/folders/${folderId}`, 'DELETE', null, true),
-  
-  // Cards endpoints
+
+  // Cards endpoints 
   getCards: (folderId) =>
-    apiRequest(`/cards/${folderId}`, 'GET', null, true),
+    apiRequest(`/cards/folder/${folderId}`, 'GET', null, true),  // Changed
 
   createCard: (folderId, question, answer) =>
-    apiRequest('/cards', 'POST', { folderId, question, answer }, true),
+    apiRequest('/cards/create', 'POST', { folder_id: folderId, question, answer }, true),  // Changed
 
   updateCard: (cardId, question, answer) =>
-    apiRequest(`/cards/${cardId}`, 'PUT', { question, answer }, true),
+    apiRequest(`/cards/${cardId}`, 'PUT', { question, answer }, true),  // ✅ Same
 
   deleteCard: (cardId) =>
-    apiRequest(`/cards/${cardId}`, 'DELETE', null, true),
+    apiRequest(`/cards/${cardId}`, 'DELETE', null, true),  // ✅ Same
+
+  // Flashcards endpoints
+  getFlashcardsByFolder: (folderId) =>
+    apiRequest(`/flashcards/folder/${folderId}`, 'GET', null, true),
+
+  getRandomFlashcards: (folderId) =>
+    apiRequest(`/flashcards/random/${folderId}`, 'GET', null, true),
+
+  searchFlashcards: (keyword) =>
+    apiRequest(`/flashcards/search?keyword=${keyword}`, 'GET', null, true),
+
+  markFlashcardStudied: (seconds) =>
+    apiRequest('/flashcards/study', 'POST', { seconds }, true),
 
   // Statistics endpoints
   getStatistics: () =>
