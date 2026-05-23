@@ -13,6 +13,8 @@ import { router, useLocalSearchParams } from "expo-router";
 import { quizstyles } from "../../styles/quizStyels";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import quizService from "../../services/quizService";
+import statisticsService from '../../services/statisticsService';
+
 
 const { width, height } = Dimensions.get("window");
 
@@ -75,6 +77,10 @@ export default function QuizPage() {
             setIsCorrect(correct);
             setShowResult(true);
             setQuestionsAnswered(prev => prev + 1);
+
+            if (statisticsService) {
+                await statisticsService.updateQuizStatistics({ is_correct: correct });
+            }
 
             if (correct) {
                 setScore(prev => prev + 1);

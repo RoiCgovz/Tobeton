@@ -138,12 +138,25 @@ export default {
   markFlashcardStudied: (seconds) =>
     apiRequest('/flashcards/study', 'POST', { seconds }, true),
 
-  // Statistics endpoints
+  // Statistics endpoints - Add these to your api.js
   getStatistics: () =>
     apiRequest('/statistics', 'GET', null, true),
 
-  updateStatistics: (stats) =>
-    apiRequest('/statistics', 'PUT', stats, true),
+  updateQuizStatistics: (data) =>
+    apiRequest('/statistics/quiz', 'PUT', data, true),
+
+  updateStudyTime: (seconds) =>
+    apiRequest('/statistics/study-time', 'PUT', { seconds }, true),
+
+  updateAppUsageTime: (seconds) =>
+    apiRequest('/statistics/app-usage', 'PUT', { seconds }, true),
+
+  // Optional - if you added these to controller
+  getTodayQuizStats: () =>
+    apiRequest('/statistics/today/quiz', 'GET', null, true),
+
+  getStreak: () =>
+    apiRequest('/statistics/streak', 'GET', null, true),
 
   // Quiz endpoints
   getQuizzesByFolder: (folderId) =>

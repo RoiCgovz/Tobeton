@@ -176,4 +176,40 @@ export const mainPageStyles = StyleSheet.create({
     fontSize: width * 0.03,
     fontFamily: "Inter_600SemiBold",
   },
+  
+  statsSummary: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 20,
+    marginBottom: 20,
+    gap: 10,
+  },
+
+  statCard: {
+    flex: 1,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#000',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+
+  statValue: {
+    fontSize: 20,
+    fontFamily: 'Inter_700Bold',
+    color: '#6C63FF',
+  },
+
+  statLabel: {
+    fontSize: 12,
+    fontFamily: 'Inter_400Regular',
+    color: '#666',
+    marginTop: 4,
+  },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withTiming, runOnJS } from "react-native-reanimated";
 import { View, Text, TouchableOpacity, StatusBar, Image, Dimensions, ActivityIndicator, ToastAndroid, Modal, TextInput, FlatList } from "react-native";
 import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from "@expo-google-fonts/inter";
@@ -9,6 +9,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import flashcardService from "../../services/flashcardService";
+import statisticsService from '../../services/statisticsService';
+
 
 const { width, height } = Dimensions.get("window");
 
@@ -64,6 +66,10 @@ export default function FlashcardsPage() {
   const isFlipped = useSharedValue(0);
   const translateX = useSharedValue(0);
   const panX = useSharedValue(0);
+  const studyTimeRef = useRef(0);
+  const savedRef = useRef(false);
+
+
 
   // Load Fonts
   const [fontsLoaded] = useFonts({
@@ -188,36 +194,69 @@ export default function FlashcardsPage() {
   useFocusEffect(
     useCallback(() => {
       loadFlashcards();
+
       return () => {
-        if (isStudying && studyTime > 0) {
-          flashcardService.markFlashcardStudied(studyTime);
+        const finalTime = studyTimeRef.current;
+        console.log("🔴 LEAVING SCREEN - Final studyTime:", finalTime);
+        console.log("🔴 Saved before:", savedRef.current);
+
+        if (finalTime > 0 && !savedRef.current) {
+          console.log("🔴 SAVING study time:", finalTime);
+          statisticsService.updateFlashcardStudyTime(finalTime);
+          savedRef.current = true;
         }
       };
     }, [folderId, randomMode])
   );
 
-  // Track study time
+  // Add this new useEffect right after your other useEffects
+  useEffect(() => {
+    // Reset saved flag when cards change (new study session)
+    if (cards.length > 0) {
+      savedRef.current = false;
+    }
+  }, [cards]);
+
+  // Timer for study time - should NOT have any save calls
   useEffect(() => {
     let interval;
     if (isStudying && cards.length > 0) {
+      console.log("🟢 Timer started");
       interval = setInterval(() => {
-        setStudyTime(prev => prev + 1);
+        setStudyTime(prev => {
+          const newTime = prev + 1;
+          studyTimeRef.current = newTime;
+          return newTime;
+        });
       }, 1000);
     }
-    return () => clearInterval(interval);
-  }, [isStudying, cards.length]);
-
-  // Start study session
-  useEffect(() => {
-    if (cards.length > 0) {
-      setIsStudying(true);
-    }
     return () => {
-      if (isStudying && studyTime > 0) {
-        flashcardService.markFlashcardStudied(studyTime);
+      if (interval) {
+        console.log("🟢 Timer stopped");
+        clearInterval(interval);
       }
     };
-  }, [cards.length]);
+  }, [isStudying, cards.length]);
+
+  // Log study time changes
+  useEffect(() => {
+    if (studyTime > 0) {
+      console.log("🔵 Study time updated:", studyTime);
+    }
+  }, [studyTime]);
+
+  // Start study session when cards are loaded
+  useEffect(() => {
+    console.log("🟢 Cards loaded:", cards.length);
+    if (cards.length > 0) {
+      console.log("🟢 Starting study session");
+      setIsStudying(true);
+      setStudyTime(0);
+      studyTimeRef.current = 0;
+    } else {
+      setIsStudying(false);
+    }
+  }, [cards]);
 
   const currentCard = cards[index];
 
