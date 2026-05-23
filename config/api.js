@@ -146,9 +146,15 @@ export default {
     apiRequest('/statistics', 'PUT', stats, true),
 
   // Quiz endpoints
-  getQuiz: (folderId) =>
-    apiRequest(`/quiz/${folderId}`, 'GET', null, true),
+  getQuizzesByFolder: (folderId) =>
+    apiRequest(`/quiz/folder/${folderId}`, 'GET', null, true),
 
-  submitQuiz: (folderId, answers) =>
-    apiRequest('/quiz/submit', 'POST', { folderId, answers }, true),
+  createQuiz: (folderId) =>
+    apiRequest('/quiz/create', 'POST', { folder_id: folderId }, true),
+
+  submitQuizAnswer: (quizId, userAnswer) =>
+    apiRequest(`/quiz/${quizId}/submit`, 'POST', { user_answer: userAnswer }, true),
+
+  deleteQuiz: (quizId) =>
+    apiRequest(`/quiz/${quizId}`, 'DELETE', null, true),
 };
