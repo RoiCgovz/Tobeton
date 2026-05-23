@@ -51,7 +51,7 @@ export default function SettingsPage() {
                         />
 
                         <View style={settingsPageStyles.textContainer}>
-                            <Text style={settingsPageStyles.Text}>Change Profile</Text>
+                            <Text style={settingsPageStyles.Text}>Edit Profile</Text>
                         </View>
 
                         <Ionicons name="chevron-forward" size={width * 0.05} color="#999" />
