@@ -104,6 +104,21 @@ export default function TabsLayout() {
             ),
         }}
       />
+
+      <Tabs.Screen
+        name="tobeton"
+        options={{
+            tabBarButton: (props) => (
+            <TouchableOpacity
+                {...props}
+                activeOpacity={0.6}
+                style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            >
+                <Ionicons name="logo-github" size={40} color="black" />
+            </TouchableOpacity>
+            ),
+        }}
+      />
     </Tabs>
   );
 }
