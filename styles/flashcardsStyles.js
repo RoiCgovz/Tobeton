@@ -146,7 +146,7 @@ export const flashcardsStyles = StyleSheet.create({
   cardLabel: {
     fontSize: 14,
     fontFamily: 'Inter_600SemiBold',
-    color: '#6C63FF',
+    color: '#000',
     marginBottom: 20,
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -155,7 +155,7 @@ export const flashcardsStyles = StyleSheet.create({
   flipButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#000',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 25,
@@ -184,7 +184,7 @@ export const flashcardsStyles = StyleSheet.create({
 
   progressFill: {
     height: '100%',
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#000',
     borderRadius: 3,
   },
   headerIcons: {
@@ -200,7 +200,7 @@ export const flashcardsStyles = StyleSheet.create({
   modeText: {
     fontSize: 12,
     fontFamily: 'Inter_600SemiBold',
-    color: '#6C63FF',
+    color: '#000',
     backgroundColor: '#F0F0FF',
     paddingHorizontal: 12,
     paddingVertical: 4,
@@ -251,7 +251,7 @@ export const flashcardsStyles = StyleSheet.create({
   },
 
   searchButton: {
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#000',
     width: 50,
     height: 50,
     borderRadius: 12,

@@ -142,6 +142,13 @@ export const quizstyles = StyleSheet.create({
     gap: 16,
   },
 
+  doneQuiz: {
+    color: '#000'
+  },
+
+  percentScore : {
+    color: "#000"
+  },
   emptyText: {
     fontSize: 18,
     fontFamily: 'Inter_700Bold',
@@ -156,7 +163,7 @@ export const quizstyles = StyleSheet.create({
   },
 
   backButton: {
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#000',
     paddingHorizontal: 30,
     paddingVertical: 12,
     borderRadius: 25,

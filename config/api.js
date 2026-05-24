@@ -12,7 +12,7 @@ const getBaseUrl = () => {
   // For development
   if (Platform.OS === 'android') {
     // For Android physical device - USE YOUR IP
-    return 'http://192.168.1.4:5000';
+    return 'http://192.168.1.5:5000';
   }
 
   // iOS Simulator or physical device

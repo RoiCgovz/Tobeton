@@ -27,7 +27,7 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false); // 👈 ADD LOADING STATE
+  const [loading, setLoading] = useState(false); 
 
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -37,7 +37,7 @@ export default function Register() {
 
   if (!fontsLoaded) return null;
 
-  const handleRegister = async () => { // 👈 MAKE ASYNC
+  const handleRegister = async () => {
     // Validate inputs
     if (!username || !password || !confirmPassword) {
       ToastAndroid.show(
@@ -63,10 +63,10 @@ export default function Register() {
       return;
     }
 
-    setLoading(true); // 👈 START LOADING
+    setLoading(true); 
 
     try {
-      // 👈 CALL BACKEND REGISTER
+     
       const result = await authService.register(username, password);
       
       if (result.success) {
@@ -74,6 +74,7 @@ export default function Register() {
           result.message || `Account created for ${username}! Please login.`,
           ToastAndroid.LONG
         );
+
         // Navigate to login screen
         router.push("/login");
       } else {
@@ -89,7 +90,7 @@ export default function Register() {
         ToastAndroid.LONG
       );
     } finally {
-      setLoading(false); // 👈 STOP LOADING
+      setLoading(false); 
     }
   };
 

@@ -358,7 +358,7 @@ export default function FlashcardsPage() {
               <Ionicons
                 name="shuffle-outline"
                 size={28}
-                color={randomMode ? "#6C63FF" : "black"}
+                color={randomMode ? "#000" : "black"}
               />
             </TouchableOpacity>
           </View>
@@ -374,7 +374,7 @@ export default function FlashcardsPage() {
         {/* Study Timer */}
         {isStudying && cards.length > 0 && (
           <View style={flashcardsStyles.timerContainer}>
-            <Ionicons name="timer-outline" size={20} color="#666" />
+            <Ionicons name="timer-outline" size={20} color="#888" />
             <Text style={flashcardsStyles.timerText}>Study Time: {formatTime(studyTime)}</Text>
           </View>
         )}
@@ -383,7 +383,7 @@ export default function FlashcardsPage() {
         <View style={flashcardsStyles.cardWrapper}>
           {loading ? (
             <View style={flashcardsStyles.loadingContainer}>
-              <ActivityIndicator size="large" color="#6C63FF" />
+              <ActivityIndicator size="large" color="#000" />
               <Text style={flashcardsStyles.loadingText}>Loading flashcards...</Text>
             </View>
           ) : cards.length === 0 ? (
