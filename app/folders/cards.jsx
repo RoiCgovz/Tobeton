@@ -12,7 +12,7 @@ import {
     RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, router, useFocusEffect } from "expo-router";  // ✅ ADD useFocusEffect HERE
+import { useLocalSearchParams, router, useFocusEffect } from "expo-router";  
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { cardPageStyles } from "../../styles/cardstyles";
 import { folderPageStyles } from "../../styles/folderpagestyles";

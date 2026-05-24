@@ -3,8 +3,6 @@ import {
     View,
     Text,
     TouchableOpacity,
-    StyleSheet,
-    Dimensions,
     ActivityIndicator,
     ToastAndroid,
 } from "react-native";
@@ -13,10 +11,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { quizstyles } from "../../styles/quizStyels";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import quizService from "../../services/quizService";
-import statisticsService from '../../services/statisticsService';
-
-
-const { width, height } = Dimensions.get("window");
+import statisticsService from "../../services/statisticsService";
 
 export default function QuizPage() {
     const { folderId, folderName } = useLocalSearchParams();
@@ -32,20 +27,20 @@ export default function QuizPage() {
     const [canAnswer, setCanAnswer] = useState(true);
     const [currentQuizId, setCurrentQuizId] = useState(null);
 
+    // ✅ NEW: quiz end state
+    const [quizFinished, setQuizFinished] = useState(false);
+
     const [quizTime, setQuizTime] = useState(0);
     const [isTakingQuiz, setIsTakingQuiz] = useState(false);
     const quizTimeRef = useRef(0);
     const savedQuizTimeRef = useRef(false);
 
-
-    // Load quiz when page opens
     useEffect(() => {
         loadQuiz();
     }, [folderId]);
 
-    // Start quiz timer when quiz loads
     useEffect(() => {
-        if (quiz && !showResult) {
+        if (quiz && !showResult && !quizFinished) {
             setIsTakingQuiz(true);
             setQuizTime(0);
             quizTimeRef.current = 0;
@@ -53,13 +48,11 @@ export default function QuizPage() {
         } else {
             setIsTakingQuiz(false);
         }
-    }, [quiz, showResult]);
+    }, [quiz, showResult, quizFinished]);
 
-    // Timer for quiz study time
     useEffect(() => {
         let interval;
-        if (isTakingQuiz && quiz && !showResult) {
-            console.log("🟢 Quiz timer started");
+        if (isTakingQuiz && quiz && !showResult && !quizFinished) {
             interval = setInterval(() => {
                 setQuizTime(prev => {
                     const newTime = prev + 1;
@@ -69,14 +62,10 @@ export default function QuizPage() {
             }, 1000);
         }
         return () => {
-            if (interval) {
-                console.log("🟢 Quiz timer stopped at:", quizTime);
-                clearInterval(interval);
-            }
+            if (interval) clearInterval(interval);
         };
-    }, [isTakingQuiz, quiz, showResult]);
+    }, [isTakingQuiz, quiz, showResult, quizFinished]);
 
-    // Save quiz time when component unmounts
     useEffect(() => {
         return () => {
             saveQuizTime();
@@ -97,29 +86,49 @@ export default function QuizPage() {
 
         const result = await quizService.createQuiz(folderId);
 
-        if (result.success) {
+        if (result?.error === "NO_MORE_CARDS") {
+            setQuiz(null);
+            setQuizFinished(true);
+
+            await saveQuizTime();
+
+            if (questionsAnswered > 0) {
+                const finalScore = Math.round((score / questionsAnswered) * 100);
+                ToastAndroid.show(
+                    `Quiz Finished! Score: ${finalScore}%`,
+                    ToastAndroid.LONG
+                );
+            } else {
+                ToastAndroid.show("No more questions available", ToastAndroid.SHORT);
+            }
+
+            setLoading(false);
+            return;
+        }
+
+        // normal success path
+        if (result?.success !== false && result?.data) {
             setQuiz(result.data);
             setCurrentQuizId(result.data.id);
         } else {
-            ToastAndroid.show(result.error || "Failed to load quiz", ToastAndroid.LONG);
-            router.back();
+            // fallback safety
+            setQuizFinished(true);
+            setQuiz(null);
         }
 
         setLoading(false);
     };
 
-    // Save quiz time when leaving or answering
     const saveQuizTime = async () => {
         const finalTime = quizTimeRef.current;
         if (finalTime > 0 && !savedQuizTimeRef.current) {
-            console.log("📝 SAVING quiz study time:", finalTime);
             await statisticsService.updateQuizStudyTime(finalTime);
             savedQuizTimeRef.current = true;
         }
     };
 
     const handleAnswer = async (answer) => {
-        if (submitting || !canAnswer) return;
+        if (submitting || !canAnswer || quizFinished) return;
 
         await saveQuizTime();
 
@@ -135,9 +144,7 @@ export default function QuizPage() {
             setShowResult(true);
             setQuestionsAnswered(prev => prev + 1);
 
-            if (statisticsService) {
-                await statisticsService.updateQuizStatistics({ is_correct: correct });
-            }
+            await statisticsService.updateQuizStatistics({ is_correct: correct });
 
             if (correct) {
                 setScore(prev => prev + 1);
@@ -153,8 +160,8 @@ export default function QuizPage() {
         setSubmitting(false);
     };
 
-
     const nextQuestion = () => {
+        if (quizFinished) return;
         loadQuiz();
     };
 
@@ -169,6 +176,7 @@ export default function QuizPage() {
             const finalScore = Math.round((score / questionsAnswered) * 100);
             ToastAndroid.show(`Quiz completed! Score: ${finalScore}%`, ToastAndroid.LONG);
         }
+
         router.back();
     };
 
@@ -183,13 +191,35 @@ export default function QuizPage() {
         );
     }
 
+    if (quizFinished) {
+        return (
+            <SafeAreaView style={quizstyles.container}>
+                <View style={quizstyles.emptyContainer}>
+                    <MaterialCommunityIcons name="check-circle-outline" size={80} color="#000" />
+                    <Text style={quizstyles.doneQuiz}>Quiz Completed 🎉</Text>
+
+                    {questionsAnswered > 0 && (
+                        <Text style={quizstyles.percentScore}>
+                            Final Score: {score}/{questionsAnswered} (
+                            {Math.round((score / questionsAnswered) * 100)}%)
+                        </Text>
+                    )}
+
+                    <TouchableOpacity style={quizstyles.backButton} onPress={exitQuiz}>
+                        <Text style={quizstyles.backButtonText}>Exit</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    // ❌ NO QUIZ (fallback)
     if (!quiz) {
         return (
             <SafeAreaView style={quizstyles.container}>
                 <View style={quizstyles.emptyContainer}>
                     <MaterialCommunityIcons name="file-question-outline" size={80} color="#ccc" />
                     <Text style={quizstyles.emptyText}>No quiz available</Text>
-                    <Text style={quizstyles.emptySubText}>Need at least 3 cards in this folder</Text>
                     <TouchableOpacity style={quizstyles.backButton} onPress={exitQuiz}>
                         <Text style={quizstyles.backButtonText}>Go Back</Text>
                     </TouchableOpacity>
@@ -200,7 +230,6 @@ export default function QuizPage() {
 
     return (
         <SafeAreaView style={quizstyles.container}>
-            {/* HEADER */}
             <View style={quizstyles.header}>
                 <TouchableOpacity onPress={exitQuiz}>
                     <Ionicons name="chevron-back" size={28} color="black" />
@@ -211,18 +240,16 @@ export default function QuizPage() {
                 <View style={{ width: 30 }} />
             </View>
 
-            {/* Score Display */}
             {questionsAnswered > 0 && (
                 <View style={quizstyles.scoreContainer}>
                     <Text style={quizstyles.scoreText}>
-                        Score: {score}/{questionsAnswered} ({Math.round((score / questionsAnswered) * 100)}%)
+                        Score: {score}/{questionsAnswered} (
+                        {Math.round((score / questionsAnswered) * 100)}%)
                     </Text>
                 </View>
             )}
 
-            {/* QUESTION CARD with Status Indicator at Top Middle */}
             <View style={quizstyles.card}>
-                {/* Small Status Indicator at Top Middle */}
                 {showResult && (
                     <View style={[
                         quizstyles.statusIndicator,
@@ -235,10 +262,9 @@ export default function QuizPage() {
                 )}
 
                 <Text style={quizstyles.questionText}>
-                    {quiz?.question || "Loading..."}
+                    {quiz?.question}
                 </Text>
 
-                {/* Show correct answer below question if wrong */}
                 {showResult && !isCorrect && (
                     <Text style={quizstyles.correctAnswerBelow}>
                         Answer: {quiz?.correct_answer}
@@ -246,36 +272,28 @@ export default function QuizPage() {
                 )}
             </View>
 
-            {/* OPTIONS - Show Next button after answering */}
             {!showResult ? (
                 <>
                     <View style={quizstyles.optionsRow}>
                         <TouchableOpacity
-                            style={[
-                                quizstyles.optionLeft,
-                                selectedAnswer === quiz?.choice_a && quizstyles.selectedOption
-                            ]}
+                            style={quizstyles.optionLeft}
                             onPress={() => handleAnswer(quiz?.choice_a)}
                             disabled={submitting || !canAnswer}
                         >
                             <Text style={quizstyles.optionText}>{quiz?.choice_a}</Text>
                         </TouchableOpacity>
+
                         <TouchableOpacity
-                            style={[
-                                quizstyles.optionRight,
-                                selectedAnswer === quiz?.choice_b && quizstyles.selectedOption
-                            ]}
+                            style={quizstyles.optionRight}
                             onPress={() => handleAnswer(quiz?.choice_b)}
                             disabled={submitting || !canAnswer}
                         >
                             <Text style={quizstyles.optionText}>{quiz?.choice_b}</Text>
                         </TouchableOpacity>
                     </View>
+
                     <TouchableOpacity
-                        style={[
-                            quizstyles.optionBottom,
-                            selectedAnswer === quiz?.choice_c && quizstyles.selectedOption
-                        ]}
+                        style={quizstyles.optionBottom}
                         onPress={() => handleAnswer(quiz?.choice_c)}
                         disabled={submitting || !canAnswer}
                     >
