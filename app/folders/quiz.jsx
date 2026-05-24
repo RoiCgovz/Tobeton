@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     View,
     Text,
@@ -32,11 +32,56 @@ export default function QuizPage() {
     const [canAnswer, setCanAnswer] = useState(true);
     const [currentQuizId, setCurrentQuizId] = useState(null);
 
+    const [quizTime, setQuizTime] = useState(0);
+    const [isTakingQuiz, setIsTakingQuiz] = useState(false);
+    const quizTimeRef = useRef(0);
+    const savedQuizTimeRef = useRef(false);
+
 
     // Load quiz when page opens
     useEffect(() => {
         loadQuiz();
     }, [folderId]);
+
+    // Start quiz timer when quiz loads
+    useEffect(() => {
+        if (quiz && !showResult) {
+            setIsTakingQuiz(true);
+            setQuizTime(0);
+            quizTimeRef.current = 0;
+            savedQuizTimeRef.current = false;
+        } else {
+            setIsTakingQuiz(false);
+        }
+    }, [quiz, showResult]);
+
+    // Timer for quiz study time
+    useEffect(() => {
+        let interval;
+        if (isTakingQuiz && quiz && !showResult) {
+            console.log("🟢 Quiz timer started");
+            interval = setInterval(() => {
+                setQuizTime(prev => {
+                    const newTime = prev + 1;
+                    quizTimeRef.current = newTime;
+                    return newTime;
+                });
+            }, 1000);
+        }
+        return () => {
+            if (interval) {
+                console.log("🟢 Quiz timer stopped at:", quizTime);
+                clearInterval(interval);
+            }
+        };
+    }, [isTakingQuiz, quiz, showResult]);
+
+    // Save quiz time when component unmounts
+    useEffect(() => {
+        return () => {
+            saveQuizTime();
+        };
+    }, []);
 
     const loadQuiz = async () => {
         if (!folderId) {
@@ -63,8 +108,20 @@ export default function QuizPage() {
         setLoading(false);
     };
 
+    // Save quiz time when leaving or answering
+    const saveQuizTime = async () => {
+        const finalTime = quizTimeRef.current;
+        if (finalTime > 0 && !savedQuizTimeRef.current) {
+            console.log("📝 SAVING quiz study time:", finalTime);
+            await statisticsService.updateQuizStudyTime(finalTime);
+            savedQuizTimeRef.current = true;
+        }
+    };
+
     const handleAnswer = async (answer) => {
         if (submitting || !canAnswer) return;
+
+        await saveQuizTime();
 
         setSelectedAnswer(answer);
         setSubmitting(true);
@@ -96,11 +153,14 @@ export default function QuizPage() {
         setSubmitting(false);
     };
 
+
     const nextQuestion = () => {
         loadQuiz();
     };
 
     const exitQuiz = async () => {
+        await saveQuizTime();
+
         if (currentQuizId && !showResult) {
             await quizService.deleteQuiz(currentQuizId);
         }

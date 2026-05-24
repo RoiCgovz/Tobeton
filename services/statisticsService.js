@@ -12,23 +12,33 @@ class StatisticsService {
   }
 
   // Update quiz statistics after each answer
-async updateQuizStatistics(quizResult) {
-  try {
-    console.log("Sending to API:", { is_correct: quizResult.is_correct ? 1 : 0 });
-    const response = await api.updateQuizStatistics({
-      is_correct: quizResult.is_correct ? 1 : 0
-    });
-    return { success: true, data: response };
-  } catch (error) {
-    console.error("Update quiz stats error:", error);
-    return { success: false, error: error.message };
+  async updateQuizStatistics(quizResult) {
+    try {
+      console.log("Sending to API:", { is_correct: quizResult.is_correct ? 1 : 0 });
+      const response = await api.updateQuizStatistics({
+        is_correct: quizResult.is_correct ? 1 : 0
+      });
+      return { success: true, data: response };
+    } catch (error) {
+      console.error("Update quiz stats error:", error);
+      return { success: false, error: error.message };
+    }
   }
-}
+
+  // Update quiz study time
+  async updateQuizStudyTime(seconds) {
+    try {
+      const response = await api.updateQuizStudyTime(seconds);
+      return { success: true, data: response };
+    } catch (error) {
+      console.error("Update quiz study time error:", error);
+      return { success: false, error: error.message };
+    }
+  }
 
   // Update flashcard study time
   async updateFlashcardStudyTime(seconds) {
     try {
-      // Call the dedicated study time endpoint
       const response = await api.updateStudyTime(seconds);
       return { success: true, data: response };
     } catch (error) {
@@ -62,6 +72,17 @@ async updateQuizStatistics(quizResult) {
       const response = await api.getStreak();
       return { success: true, data: response };
     } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  // ✅ ADD THIS - Get weekly statistics (last 7 days)
+  async getWeeklyStats() {
+    try {
+      const response = await api.getWeeklyStats();
+      return { success: true, data: response };
+    } catch (error) {
+      console.error("Get weekly stats error:", error);
       return { success: false, error: error.message };
     }
   }

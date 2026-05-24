@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Image, Dimensions, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import Svg, { Polygon } from "react-native-svg";
+import Svg, { Polygon, Line, Circle, Text as SvgText } from "react-native-svg";
 import { useFonts } from "expo-font";
 import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from "@expo-google-fonts/inter";
 import { mainPageStyles } from "../../styles/mainpagestyles";
@@ -27,38 +27,48 @@ export default function MainPage() {
 
   const loadData = async () => {
     setLoading(true);
-    
-    // Load username
+    console.log("🔵 loadData started");
+
     try {
       const storedUsername = await AsyncStorage.getItem("username");
       if (storedUsername) {
         setUsername(storedUsername);
+        console.log("🔵 Username loaded:", storedUsername);
       }
     } catch (error) {
       console.log("Error loading username:", error);
     }
 
-    // Load statistics
     const statsResult = await statisticsService.getStatistics();
+    console.log("🔵 Stats result success:", statsResult.success);
     if (statsResult.success) {
+      console.log("🔵 Stats data:", statsResult.data);
       setStats(statsResult.data);
     }
 
-    // Load folders and cards count
     const foldersResult = await folderService.getFolders();
+    console.log("🔵 Folders result success:", foldersResult.success);
     if (foldersResult.success) {
+      console.log("🔵 Folders count:", foldersResult.data.length);
       setTotalFolders(foldersResult.data.length);
       const totalCardCount = foldersResult.data.reduce((sum, folder) => sum + (folder.card_quantity || 0), 0);
       setTotalCards(totalCardCount);
+      console.log("🔵 Total cards:", totalCardCount);
     }
 
-    // Load weekly stats (last 7 days)
-    const weeklyResult = await statisticsService.getWeeklyStats?.() || { success: false };
+    const weeklyResult = await statisticsService.getWeeklyStats();
+    console.log("🔵 Weekly result:", weeklyResult);
+    console.log("🔵 Weekly success:", weeklyResult.success);
     if (weeklyResult.success) {
+      console.log("🔵 Weekly data length:", weeklyResult.data?.length);
+      console.log("🔵 Weekly data:", JSON.stringify(weeklyResult.data));
       setWeeklyStats(weeklyResult.data);
+    } else {
+      console.log("🔵 Weekly result error:", weeklyResult.error);
     }
 
     setLoading(false);
+    console.log("🔵 loadData finished");
   };
 
   const [fontsLoaded] = useFonts({
@@ -85,14 +95,13 @@ export default function MainPage() {
     },
   ];
 
-  // Calculate total study time
   const getTotalStudyTime = () => {
     const flashcardTime = stats?.total_flashcard_study_seconds || 0;
     const quizTime = (stats?.total_quizzes_taken || 0) * 30;
     const totalSeconds = flashcardTime + quizTime;
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     } else if (minutes > 0) {
@@ -102,20 +111,10 @@ export default function MainPage() {
     }
   };
 
-  // Get average score
   const getAverageScore = () => {
     return stats?.average_score_percent?.toFixed(0) || 0;
   };
 
-  // Get bar height based on study minutes (max 200px)
-  const getBarHeight = (minutes) => {
-    const maxHeight = height * 0.16;
-    const maxMinutes = 120; // 2 hours max
-    const calculatedHeight = (minutes / maxMinutes) * maxHeight;
-    return Math.min(calculatedHeight, maxHeight);
-  };
-
-  // Generate last 7 days labels
   const getLast7Days = () => {
     const days = [];
     for (let i = 6; i >= 0; i--) {
@@ -123,22 +122,44 @@ export default function MainPage() {
       date.setDate(date.getDate() - i);
       days.push({
         label: date.toLocaleDateString('en-US', { weekday: 'short' }),
-        fullDate: date.toISOString().split('T')[0]
+        fullDate: date.toISOString().split('T')[0],
+        day: date.getDate()
       });
     }
     return days;
   };
 
-  // Get study minutes for a specific day
-  const getStudyMinutesForDay = (dateStr) => {
+  // ✅ FIXED: Use actual flashcard_seconds + quiz_seconds from daily_statistics
+  const getStudyHoursForDay = (dateStr) => {
     const dayStat = weeklyStats.find(s => s.date === dateStr);
     if (dayStat) {
-      const flashcardMinutes = (dayStat.flashcard_study_seconds || 0) / 60;
-      const quizMinutes = (dayStat.quizzes_taken || 0) * 0.5; // 30 seconds per quiz
-      return Math.floor(flashcardMinutes + quizMinutes);
+      const totalSeconds = (dayStat.flashcard_seconds || 0) + (dayStat.quiz_seconds || 0);
+      return totalSeconds / 3600; // Convert to hours
     }
     return 0;
   };
+
+  const last7Days = getLast7Days();
+  const studyHours = last7Days.map(day => getStudyHoursForDay(day.fullDate));
+  const maxHours = Math.max(...studyHours, 1);
+
+  // Graph dimensions
+  const graphWidth = width - 80;
+  const graphHeight = 150;
+  const paddingLeft = 21;
+  const paddingRight = 20;
+  const paddingBottom = 25;
+
+  // Calculate points for line graph
+  const getPoints = () => {
+    const stepX = (graphWidth - paddingLeft - paddingRight) / (studyHours.length - 1);
+    return studyHours.map((hours, index) => ({
+      x: paddingLeft + (index * stepX),
+      y: graphHeight - paddingBottom - ((hours / maxHours) * (graphHeight - paddingBottom - 20))
+    }));
+  };
+
+  const points = getPoints();
 
   if (!fontsLoaded) return null;
 
@@ -151,23 +172,18 @@ export default function MainPage() {
     );
   }
 
-  const last7Days = getLast7Days();
-
   return (
     <View style={{ flex: 1 }}>
       <StatusBar style="light" />
 
-      {/* BACKGROUND */}
       <Image
         source={require("../../assets/gifs/writing.gif")}
         style={mainPageStyles.background}
         resizeMode="cover"
       />
 
-      {/* OVERLAY */}
       <View style={mainPageStyles.overlay} />
 
-      {/* DIAGONAL */}
       <Svg height="100%" width="100%" style={mainPageStyles.svg}>
         <Polygon
           points={`
@@ -181,7 +197,6 @@ export default function MainPage() {
         />
       </Svg>
 
-      {/* MAIN */}
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -198,9 +213,7 @@ export default function MainPage() {
               </TouchableOpacity>
 
               <View style={mainPageStyles.textContainer}>
-                <Text style={mainPageStyles.greeting}>
-                  Greetings Comrade,
-                </Text>
+                <Text style={mainPageStyles.greeting}>Greetings Comrade,</Text>
                 <Text style={mainPageStyles.name}>{username}</Text>
               </View>
             </View>
@@ -211,6 +224,39 @@ export default function MainPage() {
                 style={mainPageStyles.moonimage}
               />
             </TouchableOpacity>
+          </View>
+
+
+
+          {/* MAIN ROW */}
+          <View style={mainPageStyles.mainRow}>
+            <View style={mainPageStyles.iconColumn}>
+              {icons.map((item, index) => (
+                <TouchableOpacity key={index} style={mainPageStyles.iconBox} onPress={item.action}>
+                  <Image source={item.icon} style={mainPageStyles.iconImage} />
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={mainPageStyles.rightContainer}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={mainPageStyles.subjectScroll}
+              >
+                <View style={mainPageStyles.subjectCard}>
+                  <Image
+                    source={require("../../assets/gifs/sixseven(2).gif")}
+                    style={mainPageStyles.subjectImage}
+                  />
+                  <Text style={mainPageStyles.subjectTitle}>Quick Stats</Text>
+                  <View style={mainPageStyles.subjectStatsContainer}>
+                    <Text style={mainPageStyles.subjectStat}>Quizzes: {stats?.total_quizzes_taken || 0}</Text>
+                    <Text style={mainPageStyles.subjectStat}>Streak: 🔥 {stats?.streak || 0} days</Text>
+                  </View>
+                </View>
+              </ScrollView>
+            </View>
           </View>
 
           {/* STATS SUMMARY */}
@@ -233,71 +279,121 @@ export default function MainPage() {
             </View>
           </View>
 
-          {/* MAIN ROW */}
-          <View style={mainPageStyles.mainRow}>
-            {/* Icon Column */}
-            <View style={mainPageStyles.iconColumn}>
-              {icons.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={mainPageStyles.iconBox}
-                  onPress={item.action}
-                >
-                  <Image source={item.icon} style={mainPageStyles.iconImage} />
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Quick Stats / Top Folder */}
-            <View style={mainPageStyles.rightContainer}>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={mainPageStyles.subjectScroll}
-              >
-                <View style={mainPageStyles.subjectCard}>
-                  <Image
-                    source={require("../../assets/gifs/sixseven(2).gif")}
-                    style={mainPageStyles.subjectImage}
-                  />
-                  <Text style={mainPageStyles.subjectTitle}>
-                    Quick Stats
-                  </Text>
-                  <View style={mainPageStyles.subjectStatsContainer}>
-                    <Text style={mainPageStyles.subjectStat}>
-                      Quizzes: {stats?.total_quizzes_taken || 0}
-                    </Text>
-                    <Text style={mainPageStyles.subjectStat}>
-                      Streak: 🔥 {stats?.streak || 0} days
-                    </Text>
-                  </View>
-                </View>
-              </ScrollView>
-            </View>
-          </View>
-
-          {/* GRAPH - Daily Study Hours */}
+          {/* LINE GRAPH - Daily Study Hours */}
           <View style={mainPageStyles.graphContainer}>
-            <Text style={mainPageStyles.graphTitle}>
-              Daily Study Activity
-            </Text>
+            <Text style={mainPageStyles.graphTitle}>Daily Study Hours</Text>
 
             <View style={mainPageStyles.graphCard}>
-              <View style={mainPageStyles.barRow}>
-                {last7Days.map((day, index) => (
-                  <View key={index} style={mainPageStyles.barContainer}>
-                    <View
-                      style={[
-                        mainPageStyles.bar,
-                        { height: getBarHeight(getStudyMinutesForDay(day.fullDate)) }
-                      ]}
+              <Svg width={graphWidth} height={graphHeight}>
+                {/* Y-axis */}
+                <Line
+                  x1={paddingLeft - 5}
+                  y1={10}
+                  x2={paddingLeft - 5}
+                  y2={graphHeight - paddingBottom + 5}
+                  stroke="#666"
+                  strokeWidth={1}
+                />
+
+                {/* X-axis */}
+                <Line
+                  x1={paddingLeft - 5}
+                  y1={graphHeight - paddingBottom + 5}
+                  x2={graphWidth}
+                  y2={graphHeight - paddingBottom + 5}
+                  stroke="#666"
+                  strokeWidth={1}
+                />
+
+                {/* Y-axis labels */}
+                <SvgText
+                  x={paddingLeft - 8}
+                  y={10}
+                  fontSize="10"
+                  fill="#666"
+                  textAnchor="end"
+                >
+                  {maxHours.toFixed(1)}h
+                </SvgText>
+                <SvgText
+                  x={paddingLeft - 8}
+                  y={(graphHeight - paddingBottom + 5 + 10) / 2}
+                  fontSize="10"
+                  fill="#666"
+                  textAnchor="end"
+                >
+                  {(maxHours / 2).toFixed(1)}h
+                </SvgText>
+                <SvgText
+                  x={paddingLeft - 8}
+                  y={graphHeight - paddingBottom + 5}
+                  fontSize="10"
+                  fill="#666"
+                  textAnchor="end"
+                >
+                  0h
+                </SvgText>
+
+                {/* Grid lines */}
+                <Line
+                  x1={paddingLeft - 2}
+                  y1={10}
+                  x2={graphWidth}
+                  y2={10}
+                  stroke="#DDD"
+                  strokeWidth={0.5}
+                  strokeDasharray="4,4"
+                />
+                <Line
+                  x1={paddingLeft - 2}
+                  y1={(graphHeight - paddingBottom + 5 + 10) / 2}
+                  x2={graphWidth}
+                  y2={(graphHeight - paddingBottom + 5 + 10) / 2}
+                  stroke="#DDD"
+                  strokeWidth={0.5}
+                  strokeDasharray="4,4"
+                />
+
+                {/* Line connecting points */}
+                <Polygon
+                  points={points.map(p => `${p.x},${p.y}`).join(' ')}
+                  fill="none"
+                  stroke="#333"
+                  strokeWidth={2.5}
+                />
+
+                {/* Area under line (optional) */}
+                <Polygon
+                  points={[
+                    `${points[0]?.x || paddingLeft},${graphHeight - paddingBottom + 5}`,
+                    ...points.map(p => `${p.x},${p.y}`),
+                    `${points[points.length - 1]?.x || graphWidth},${graphHeight - paddingBottom + 5}`
+                  ].join(' ')}
+                  fill="#333"
+                  fillOpacity={0.1}
+                />
+
+                {/* Points and X-axis labels */}
+                {points.map((point, index) => (
+                  <React.Fragment key={index}>
+                    <Circle
+                      cx={point.x}
+                      cy={point.y}
+                      r={4}
+                      fill="#333"
                     />
-                    <Text style={mainPageStyles.barLabel}>
-                      {day.label}
-                    </Text>
-                  </View>
+                    <SvgText
+                      x={point.x}
+                      y={graphHeight - paddingBottom + 18}
+                      fontSize="10"
+                      fill="#666"
+                      textAnchor="middle"
+                    >
+                      {last7Days[index].label}
+                    </SvgText>
+                  </React.Fragment>
                 ))}
-              </View>
+              </Svg>
             </View>
           </View>
         </ScrollView>

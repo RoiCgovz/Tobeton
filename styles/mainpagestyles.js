@@ -176,12 +176,12 @@ export const mainPageStyles = StyleSheet.create({
     fontSize: width * 0.03,
     fontFamily: "Inter_600SemiBold",
   },
-  
+
   statsSummary: {
+    marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: 20,
-    marginBottom: 20,
     gap: 10,
   },
 
@@ -201,15 +201,42 @@ export const mainPageStyles = StyleSheet.create({
   },
 
   statValue: {
-    fontSize: 20,
+    fontSize: 15,
     fontFamily: 'Inter_700Bold',
-    color: '#6C63FF',
+    color: 'black',
   },
 
   statLabel: {
-    fontSize: 12,
+    fontSize: 9,
     fontFamily: 'Inter_400Regular',
     color: '#666',
     marginTop: 4,
+    alignSelf: 'center',
+  },
+  graphContainer: {
+    marginHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 30,
+  },
+
+  graphTitle: {
+    fontSize: 16,
+    fontFamily: 'Inter_700Bold',
+    color: '#333',
+    marginBottom: 12,
+  },
+
+  graphCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#EEE',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+    alignItems: 'center',
   },
 });

@@ -148,8 +148,15 @@ export default {
   updateStudyTime: (seconds) =>
     apiRequest('/statistics/study-time', 'PUT', { seconds }, true),
 
+  updateQuizStudyTime: (seconds) =>
+    apiRequest('/statistics/quiz-study-time', 'PUT', { seconds }, true),
+
   updateAppUsageTime: (seconds) =>
     apiRequest('/statistics/app-usage', 'PUT', { seconds }, true),
+
+  // Add this to your api.js exports (with the other statistics endpoints)
+  getWeeklyStats: () =>
+    apiRequest('/statistics/weekly', 'GET', null, true),
 
   // Optional - if you added these to controller
   getTodayQuizStats: () =>
