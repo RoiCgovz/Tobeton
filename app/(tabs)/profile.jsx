@@ -23,8 +23,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../../config/api";
 import { useFocusEffect } from "@react-navigation/native";
 
-const PROFILE_KEY = "@profile_pic";
-const BANNER_KEY = "@banner_pic";
+const getProfileKey = (userId) => `@profile_pic_${userId}`;
+const getBannerKey = (userId) => `@banner_pic_${userId}`;
 
 export default function ProfilePage() {
 
@@ -46,19 +46,17 @@ export default function ProfilePage() {
     const [profilePic, setProfilePic] = useState(null);
     const [bannerPic, setBannerPic] = useState(null);
 
-    // ❌ REMOVED useEffect([]) ONLY
-    // ✔ replaced with focus-based refresh
 
     const loadImages = async () => {
-        try {
-            const savedProfile = await AsyncStorage.getItem(PROFILE_KEY);
-            const savedBanner = await AsyncStorage.getItem(BANNER_KEY);
+        const userId = await AsyncStorage.getItem("userId");
 
-            if (savedProfile) setProfilePic(savedProfile);
-            if (savedBanner) setBannerPic(savedBanner);
-        } catch (err) {
-            console.log("Image load error:", err);
-        }
+        if (!userId) return;
+
+        const savedProfile = await AsyncStorage.getItem(getProfileKey(userId));
+        const savedBanner = await AsyncStorage.getItem(getBannerKey(userId));
+
+        if (savedProfile) setProfilePic(savedProfile);
+        if (savedBanner) setBannerPic(savedBanner);
     };
 
     const loadProfile = async () => {
