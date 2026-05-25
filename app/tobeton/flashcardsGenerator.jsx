@@ -137,7 +137,7 @@ export default function FlashCardsGenerator() {
           };
 
           if (!card.question || !card.answer) return;
-
+          
           cardsRef.current.push(card);
 
           const cardText = `Q: ${card.question}\nA: ${card.answer}`;
