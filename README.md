@@ -61,7 +61,7 @@ Layout with navigation buttons featuring the following icons:
 |---|---------|-------------|
 | 1 | Search Folder Navigation | Search through folders |
 | 2 | List Folder Container | Display all folders with refresh button |
-| 3 | Add Folder Button | Create new folders |
+| 3 | Add and Update Folder Button | Create new folders or Edit Folder|
 | 4 | Container Style Changer | Toggle folder display style |
 
 ---
