@@ -110,6 +110,8 @@ Layout with navigation buttons featuring the following icons:
 
 ## Achievement Page
 
+> ⚠️ **Status:** Non-Functional Yet
+
 | # | Feature | Description |
 |---|---------|-------------|
 | 1 | Achievement Cards List | Display all earned and available achievements |
