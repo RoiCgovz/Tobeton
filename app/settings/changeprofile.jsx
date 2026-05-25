@@ -31,8 +31,8 @@ import * as ImagePicker from "expo-image-picker";
 
 const { width, height } = Dimensions.get("window");
 
-const PROFILE_KEY = "@profile_pic";
-const BANNER_KEY = "@banner_pic";
+const getProfileKey = (userId) => `@profile_pic_${userId}`;
+const getBannerKey = (userId) => `@banner_pic_${userId}`;
 
 export default function ChangeProfilePage() {
     const [fontsLoaded] = useFonts({
@@ -41,18 +41,13 @@ export default function ChangeProfilePage() {
         Inter_700Bold,
     });
 
-    // Form states
     const [newUsername, setNewUsername] = useState("");
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
-
-    // Images
     const [profilePic, setProfilePic] = useState(null);
     const [bannerPic, setBannerPic] = useState(null);
-
-    // Password visibility states
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -74,8 +69,12 @@ export default function ChangeProfilePage() {
     };
 
     const loadImages = async () => {
-        const savedProfile = await AsyncStorage.getItem(PROFILE_KEY);
-        const savedBanner = await AsyncStorage.getItem(BANNER_KEY);
+        const userId = await authService.getUserId();
+
+        if (!userId) return;
+
+        const savedProfile = await AsyncStorage.getItem(getProfileKey(userId));
+        const savedBanner = await AsyncStorage.getItem(getBannerKey(userId));
 
         if (savedProfile) setProfilePic(savedProfile);
         if (savedBanner) setBannerPic(savedBanner);
@@ -108,8 +107,10 @@ export default function ChangeProfilePage() {
         }, 100);
     };
 
-    // IMAGE PICKERS
     const pickProfileImage = async () => {
+        const userId = await authService.getUserId();
+        if (!userId) return;
+
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             quality: 1,
@@ -119,12 +120,16 @@ export default function ChangeProfilePage() {
 
         if (!result.canceled) {
             const uri = result.assets[0].uri;
+
             setProfilePic(uri);
-            await AsyncStorage.setItem(PROFILE_KEY, uri);
+            await AsyncStorage.setItem(getProfileKey(userId), uri);
         }
     };
-
+    
     const pickBannerImage = async () => {
+        const userId = await authService.getUserId();
+        if (!userId) return;
+
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             quality: 1,
@@ -134,8 +139,9 @@ export default function ChangeProfilePage() {
 
         if (!result.canceled) {
             const uri = result.assets[0].uri;
+
             setBannerPic(uri);
-            await AsyncStorage.setItem(BANNER_KEY, uri);
+            await AsyncStorage.setItem(getBannerKey(userId), uri);
         }
     };
 

@@ -22,7 +22,8 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 
-const PROFILE_KEY = "@profile_pic";
+const getProfileKey = (userId) => `@profile_pic_${userId}`;
+const getBannerKey = (userId) => `@banner_pic_${userId}`;
 
 const { width, height } = Dimensions.get("window");
 
@@ -37,11 +38,14 @@ export default function SettingsPage() {
     const [profilePic, setProfilePic] = useState(null);
 
     const loadProfilePic = async () => {
-        const saved = await AsyncStorage.getItem(PROFILE_KEY);
+        const userId = await AsyncStorage.getItem("userId");
+
+        if (!userId) return;
+
+        const saved = await AsyncStorage.getItem(getProfileKey(userId));
         if (saved) setProfilePic(saved);
     };
 
-    // 🔥 refresh every time screen is focused
     useFocusEffect(
         useCallback(() => {
             loadProfilePic();
