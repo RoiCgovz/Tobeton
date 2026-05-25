@@ -26,10 +26,7 @@ export default function QuizPage() {
     const [questionsAnswered, setQuestionsAnswered] = useState(0);
     const [canAnswer, setCanAnswer] = useState(true);
     const [currentQuizId, setCurrentQuizId] = useState(null);
-
-    // ✅ NEW: quiz end state
     const [quizFinished, setQuizFinished] = useState(false);
-
     const [quizTime, setQuizTime] = useState(0);
     const [isTakingQuiz, setIsTakingQuiz] = useState(false);
     const quizTimeRef = useRef(0);
@@ -213,7 +210,6 @@ export default function QuizPage() {
         );
     }
 
-    // ❌ NO QUIZ (fallback)
     if (!quiz) {
         return (
             <SafeAreaView style={quizstyles.container}>

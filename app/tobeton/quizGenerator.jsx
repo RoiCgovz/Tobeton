@@ -29,11 +29,10 @@ export default function QuizGenerator() {
 
   const esRef = useRef(null);
   const flatListRef = useRef(null);
-  const quizRef = useRef([]);
 
-  // ======================
-  // SAVE QUIZ
-  // ======================
+  const quizRef = useRef([]);
+  const folderRef = useRef(null);
+
   const saveQuiz = async () => {
     try {
       const token = await AuthService.getToken();
@@ -43,9 +42,7 @@ export default function QuizGenerator() {
         return;
       }
 
-      const payload = quizRef.current;
-
-      if (!payload.length) {
+      if (!quizRef.current.length) {
         ToastAndroid.show("No quiz to save", ToastAndroid.SHORT);
         return;
       }
@@ -59,8 +56,8 @@ export default function QuizGenerator() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            folder_id: 1,
-            quizzes: payload,
+            folder: folderRef.current,
+            quizzes: quizRef.current,
           }),
         }
       );
@@ -69,7 +66,7 @@ export default function QuizGenerator() {
 
       if (res.ok) {
         ToastAndroid.show(
-          `Saved ${payload.length} quizzes`,
+          `Saved ${quizRef.current.length} quizzes`,
           ToastAndroid.SHORT
         );
       } else {
@@ -83,94 +80,91 @@ export default function QuizGenerator() {
     }
   };
 
-  // ======================
-  // SEND MESSAGE (SSE)
-  // ======================
- const sendMessage = () => {
-  if (!input.trim()) return;
+  const sendMessage = () => {
+    if (!input.trim()) return;
 
-  const prompt = input;
+    const prompt = input;
 
-  setMessages((prev) => [
-    ...prev,
-    { role: "user", text: prompt },
-    { role: "bot", text: "" },
-  ]);
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", text: prompt },
+      { role: "bot", text: "" },
+    ]);
 
-  setInput("");
-  setIsGenerating(true);
+    setInput("");
+    setIsGenerating(true);
 
-  quizRef.current = [];
+    quizRef.current = [];
+    folderRef.current = null;
 
-  let botText = "";
+    if (esRef.current) esRef.current.close();
 
-  if (esRef.current) esRef.current.close();
-
-  const es = new EventSource(
-    "http://192.168.1.5:5000/quizAI/quiz-sse",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: prompt }),
-    }
-  );
-
-  esRef.current = es;
-
-  es.addEventListener("message", (event) => {
-    if (!event.data) return;
-
-    try {
-      const data = JSON.parse(event.data);
-
-      if (data.type === "quiz") {
-        const q = data.payload;
-
-        if (!q?.question || !q?.options) return;
-
-        quizRef.current.push(q);
-
-        const text =
-          `Q: ${q.question}\n` +
-          `• ${q.options[0]}\n` +
-          `• ${q.options[1]}\n` +
-          `• ${q.options[2]}`;
-
-        botText += (botText ? "\n\n" : "") + text;
-
-        setMessages((prev) => {
-          const updated = [...prev];
-          updated[updated.length - 1] = {
-            role: "bot",
-            text: botText,
-          };
-          return updated;
-        });
+    const es = new EventSource(
+      "http://192.168.1.5:5000/quizAI/quiz-sse",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: prompt }),
       }
+    );
 
-      if (data.type === "done") {
-        setIsGenerating(false);
-        es.close();
-        esRef.current = null;
+    esRef.current = es;
+
+    let botText = "";
+
+    es.addEventListener("message", (event) => {
+      if (!event.data) return;
+
+      try {
+        const data = JSON.parse(event.data);
+
+        // 🔥 FINAL = SINGLE SOURCE OF TRUTH
+        if (data.type === "final") {
+          folderRef.current = data.payload.folder;
+          quizRef.current = data.payload.cards || [];
+        }
+
+        if (data.type === "quiz") {
+          const q = data.payload;
+          if (!q?.question || !q?.options) return;
+
+          quizRef.current.push(q);
+
+          const text =
+            `Q: ${q.question}\n` +
+            `• ${q.options[0]}\n` +
+            `• ${q.options[1]}\n` +
+            `• ${q.options[2]}`;
+
+          botText += (botText ? "\n\n" : "") + text;
+
+          setMessages((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1] = {
+              role: "bot",
+              text: botText,
+            };
+            return updated;
+          });
+        }
+
+        if (data.type === "done") {
+          setIsGenerating(false);
+          es.close();
+          esRef.current = null;
+        }
+      } catch (err) {
+        console.log("Parse error:", err);
       }
+    });
 
-      console.log(event.data);
+    es.addEventListener("error", (err) => {
+      console.log("SSE Error:", err);
+      setIsGenerating(false);
+      es.close();
+    });
+  };
 
-    } catch (err) {
-      console.log("Parse error:", err);
-    }
-  });
-
-  es.addEventListener("error", (err) => {
-    console.log("SSE Error:", err);
-    setIsGenerating(false);
-    es.close();
-  });
-};
-
-  // ======================
-  // UI
-  // ======================
   return (
     <KeyboardAvoidingView
       style={tobetonStyles.container}
@@ -178,17 +172,14 @@ export default function QuizGenerator() {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <SafeAreaView style={tobetonStyles.container}>
-          {/* BACK */}
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="chevron-back" size={28} />
           </TouchableOpacity>
 
-          {/* HEADER */}
           <View style={tobetonStyles.header}>
             <Text style={tobetonStyles.title}>Quiz Generator</Text>
           </View>
 
-          {/* MESSAGES */}
           <FlatList
             ref={flatListRef}
             data={messages}
@@ -207,14 +198,12 @@ export default function QuizGenerator() {
             )}
           />
 
-          {/* SAVE BUTTON */}
           <TouchableOpacity onPress={saveQuiz} style={tobetonStyles.saveBtn}>
             <Text style={{ color: "#fff" }}>
               Save ({quizRef.current.length})
             </Text>
           </TouchableOpacity>
 
-          {/* INPUT */}
           <View style={tobetonStyles.inputRow}>
             <TextInput
               value={input}

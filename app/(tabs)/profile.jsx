@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { router } from 'expo-router';
 import {
     View,
@@ -21,8 +21,10 @@ import { Ionicons } from "@expo/vector-icons";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../../config/api";
+import { useFocusEffect } from "@react-navigation/native";
 
-const { width, height } = Dimensions.get("window");
+const PROFILE_KEY = "@profile_pic";
+const BANNER_KEY = "@banner_pic";
 
 export default function ProfilePage() {
 
@@ -41,15 +43,28 @@ export default function ProfilePage() {
 
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadProfile();
-    }, []);
+    const [profilePic, setProfilePic] = useState(null);
+    const [bannerPic, setBannerPic] = useState(null);
+
+    // ❌ REMOVED useEffect([]) ONLY
+    // ✔ replaced with focus-based refresh
+
+    const loadImages = async () => {
+        try {
+            const savedProfile = await AsyncStorage.getItem(PROFILE_KEY);
+            const savedBanner = await AsyncStorage.getItem(BANNER_KEY);
+
+            if (savedProfile) setProfilePic(savedProfile);
+            if (savedBanner) setBannerPic(savedBanner);
+        } catch (err) {
+            console.log("Image load error:", err);
+        }
+    };
 
     const loadProfile = async () => {
         try {
             setLoading(true);
 
-            // 1. Get stored user info
             const storedUsername = await AsyncStorage.getItem("username");
             const userId = await AsyncStorage.getItem("userId");
 
@@ -57,12 +72,8 @@ export default function ProfilePage() {
                 setUsername(storedUsername);
             }
 
-            // 2. Call backend (ONLY if userId exists)
             if (userId) {
                 const response = await api.get(`/users/profile/${userId}`);
-
-                // Expected backend response:
-                // { following: 1200, friends: 67, achievements: 12 }
 
                 setProfile({
                     following: response.following || 0,
@@ -77,6 +88,14 @@ export default function ProfilePage() {
             setLoading(false);
         }
     };
+
+    // 🔥 THIS IS THE ONLY IMPORTANT FIX
+    useFocusEffect(
+        useCallback(() => {
+            loadProfile();
+            loadImages();
+        }, [])
+    );
 
     if (!fontsLoaded) return null;
 
@@ -93,14 +112,16 @@ export default function ProfilePage() {
                         activeOpacity={0.7}
                     >
                         <Image
-                            source={require("../../assets/gifs/kimi_no_nawa.gif")}
+                            source={
+                                bannerPic
+                                    ? { uri: bannerPic }
+                                    : require("../../assets/gifs/kimi_no_nawa.gif")
+                            }
                             style={profilePageStyles.bannerPicture}
                         />
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={profilePageStyles.addButton}
-                    >
+                    <TouchableOpacity style={profilePageStyles.addButton}>
                         <Text style={profilePageStyles.addButtonText}>+ Add</Text>
                     </TouchableOpacity>
                 </View>
@@ -113,7 +134,11 @@ export default function ProfilePage() {
                             activeOpacity={0.6}
                         >
                             <Image
-                                source={require("../../assets/gifs/sixseven.gif")}
+                                source={
+                                    profilePic
+                                        ? { uri: profilePic }
+                                        : require("../../assets/gifs/sixseven.gif")
+                                }
                                 style={profilePageStyles.profileImage}
                             />
                         </TouchableOpacity>
