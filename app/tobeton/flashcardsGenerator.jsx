@@ -46,6 +46,8 @@ export default function FlashCardsGenerator() {
         return;
       }
 
+      const folder = folderRef.current || {};
+
       const res = await fetch(
         "http://192.168.1.5:5000/flashcards/save-cards",
         {
@@ -55,7 +57,8 @@ export default function FlashCardsGenerator() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            folder: folderRef.current,
+            subject: folder.subject,
+            topic: folder.topic,
             cards: cardsRef.current,
           }),
         }
@@ -75,7 +78,6 @@ export default function FlashCardsGenerator() {
       ToastAndroid.show("Network error", ToastAndroid.SHORT);
     }
   };
-
   const sendMessage = () => {
     if (!input.trim()) return;
 
@@ -115,11 +117,17 @@ export default function FlashCardsGenerator() {
         const data = JSON.parse(event.data);
 
     
-        if (data.type === "final") {
-          folderRef.current = data.payload.folder;
-          cardsRef.current = data.payload.cards || [];
-        }
+      if (data.type === "final") {
+        const folder = data.payload.folder;
 
+        folderRef.current = {
+          subject: folder.subject,
+          topic: folder.topic,
+          folder_name: folder.folder_name,
+        };
+
+        cardsRef.current = data.payload.cards || [];
+      }
         if (data.type === "card") {
           const raw = data.payload;
 
