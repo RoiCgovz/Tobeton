@@ -6,8 +6,8 @@
 
 ## 🚀 Quick Navigation
 
-- [Authentication](##authentication)
-- [Main Page](##main-page)
+- [Authentication](#authentication)
+- [Main Page](#main-page)
 - [Home Page](#home-page)
 - [Folder Page](#folder-page)
 - [Card Page](#card-page)
@@ -17,12 +17,12 @@
 - [Achievement Page](#achievement-page)
 - [Settings Page](#settings-page)
 - [Edit Profile Page](#edit-profile-page)
-- [AI Assistance (Tobe)](#ai-assistance-tobe)
+- [AI Assistance](#ai-assistance)
 - [Overall Assistant Page](#overall-assistant-page)
 
 ---
 
-## 🔐 Authentication
+## Authentication
 
 | Page | Description |
 |------|-------------|
@@ -31,7 +31,7 @@
 
 ---
 
-## 🏠 Main Page
+## Main Page
 
 Layout with navigation buttons featuring the following icons:
 
@@ -43,7 +43,7 @@ Layout with navigation buttons featuring the following icons:
 
 ---
 
-## 🏡 Home Page
+## Home Page
 
 | # | Feature | Description |
 |---|---------|-------------|
@@ -55,7 +55,7 @@ Layout with navigation buttons featuring the following icons:
 
 ---
 
-## 📂 Folder Page
+## Folder Page
 
 | # | Feature | Description |
 |---|---------|-------------|
@@ -66,7 +66,7 @@ Layout with navigation buttons featuring the following icons:
 
 ---
 
-## 🃏 Card Page
+## Card Page
 
 | # | Feature | Description |
 |---|---------|-------------|
@@ -77,7 +77,7 @@ Layout with navigation buttons featuring the following icons:
 
 ---
 
-## ❓ Quiz Page
+## Quiz Page
 
 | # | Feature | Description |
 |---|---------|-------------|
@@ -86,7 +86,7 @@ Layout with navigation buttons featuring the following icons:
 
 ---
 
-## 🃟 Flashcard Page
+## Flashcard Page
 
 | # | Feature | Description |
 |---|---------|-------------|
@@ -96,7 +96,7 @@ Layout with navigation buttons featuring the following icons:
 
 ---
 
-## 👤 Profile Page
+## Profile Page
 
 > ⚠️ **Status:** Non-Functional Yet
 
@@ -108,7 +108,7 @@ Layout with navigation buttons featuring the following icons:
 
 ---
 
-## 🏆 Achievement Page
+## Achievement Page
 
 | # | Feature | Description |
 |---|---------|-------------|
@@ -116,7 +116,7 @@ Layout with navigation buttons featuring the following icons:
 
 ---
 
-## ⚙️ Settings Page
+## Settings Page
 
 | # | Feature | Description |
 |---|---------|-------------|
@@ -125,7 +125,7 @@ Layout with navigation buttons featuring the following icons:
 
 ---
 
-## ✏️ Edit Profile Page
+## Edit Profile Page
 
 | # | Feature | Description |
 |---|---------|-------------|
@@ -134,7 +134,7 @@ Layout with navigation buttons featuring the following icons:
 
 ---
 
-## 🤖 AI Assistance (Tobe)
+## AI Assistance
 
 Tobeton's AI companion **Tobe** provides multiple intelligent features:
 
@@ -148,7 +148,7 @@ Tobeton's AI companion **Tobe** provides multiple intelligent features:
 
 ---
 
-## 🧠 Overall Assistant Page
+## Overall Assistant Page
 
 The main interface for interacting with **Tobe** AI:
 
@@ -159,7 +159,7 @@ The main interface for interacting with **Tobe** AI:
 
 ---
 
-## 👥 Team Tobeton
+## Team Tobeton
 
 **Developers:** 4
 
@@ -167,7 +167,7 @@ The main interface for interacting with **Tobe** AI:
 
 ---
 
-## 🛠️ Tech Stack (Frontend)
+## Tech Stack (Frontend)
 
 - React / Next.js
 - Modern UI/UX design
@@ -175,7 +175,7 @@ The main interface for interacting with **Tobe** AI:
 
 ---
 
-## 📦 Installation & Setup
+## Installation & Setup
 
 ```bash
 # Clone the repository
