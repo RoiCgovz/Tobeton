@@ -6,8 +6,8 @@
 
 ## 🚀 Quick Navigation
 
-- [Authentication](#authentication)
-- [Main Page](#main-page)
+- [Authentication](##authentication)
+- [Main Page](##main-page)
 - [Home Page](#home-page)
 - [Folder Page](#folder-page)
 - [Card Page](#card-page)
