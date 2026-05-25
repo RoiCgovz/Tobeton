@@ -17,7 +17,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import EventSource from "react-native-sse";
 import { tobetonStyles } from "../../styles/tobetonstyles";
-
 import AuthService from "../../services/authService";
 
 export default function FlashCardsGenerator() {
@@ -29,7 +28,9 @@ export default function FlashCardsGenerator() {
 
   const flatListRef = useRef(null);
   const esRef = useRef(null);
+
   const cardsRef = useRef([]);
+  const folderRef = useRef(null);
 
   const saveCards = async () => {
     try {
@@ -40,9 +41,7 @@ export default function FlashCardsGenerator() {
         return;
       }
 
-      const payload = cardsRef.current;
-
-      if (!payload.length) {
+      if (!cardsRef.current.length) {
         ToastAndroid.show("No flashcards to save", ToastAndroid.SHORT);
         return;
       }
@@ -56,8 +55,8 @@ export default function FlashCardsGenerator() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            folder_id: 1,
-            cards: payload,
+            folder: folderRef.current,
+            cards: cardsRef.current,
           }),
         }
       );
@@ -66,14 +65,11 @@ export default function FlashCardsGenerator() {
 
       if (res.ok) {
         ToastAndroid.show(
-          `Saved ${payload.length} flashcards`,
+          `Saved ${cardsRef.current.length} flashcards`,
           ToastAndroid.SHORT
         );
       } else {
-        ToastAndroid.show(
-          data?.error || "Save failed",
-          ToastAndroid.SHORT
-        );
+        ToastAndroid.show(data?.error || "Save failed", ToastAndroid.SHORT);
       }
     } catch (err) {
       ToastAndroid.show("Network error", ToastAndroid.SHORT);
@@ -95,8 +91,7 @@ export default function FlashCardsGenerator() {
     setIsGenerating(true);
 
     cardsRef.current = [];
-
-    let botText = "";
+    folderRef.current = null;
 
     if (esRef.current) esRef.current.close();
 
@@ -111,11 +106,19 @@ export default function FlashCardsGenerator() {
 
     esRef.current = es;
 
+    let botText = "";
+
     es.addEventListener("message", (event) => {
       if (!event.data) return;
 
       try {
         const data = JSON.parse(event.data);
+
+    
+        if (data.type === "final") {
+          folderRef.current = data.payload.folder;
+          cardsRef.current = data.payload.cards || [];
+        }
 
         if (data.type === "card") {
           const raw = data.payload;
@@ -207,7 +210,10 @@ export default function FlashCardsGenerator() {
               multiline
             />
 
-            <TouchableOpacity onPress={sendMessage} style={tobetonStyles.sendBtn}>
+            <TouchableOpacity
+              onPress={sendMessage}
+              style={tobetonStyles.sendBtn}
+            >
               <Text style={{ color: "#fff" }}>
                 {isGenerating ? "..." : "Send"}
               </Text>

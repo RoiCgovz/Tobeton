@@ -10,7 +10,9 @@ import {
     ToastAndroid,
     ActivityIndicator,
     RefreshControl,
+    Alert,
 } from "react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
@@ -20,9 +22,11 @@ import {
     Inter_600SemiBold,
     Inter_700Bold,
 } from "@expo-google-fonts/inter";
+
 import { folderPageStyles } from "../../styles/folderpagestyles";
 import { router } from "expo-router";
 import folderService from "../../services/folderService";
+import { Ionicons } from "@expo/vector-icons";
 
 const { width, height } = Dimensions.get("window");
 
@@ -65,7 +69,53 @@ export default function FolderPage() {
         setRefreshing(false);
     };
 
-    // Filter folders based on search
+    const deleteFolder = async (id) => {
+        try {
+            const result = await folderService.deleteFolder(id);
+
+            if (result.success) {
+                setFolders((prev) => prev.filter((f) => f.id !== id));
+                ToastAndroid.show("Folder deleted", ToastAndroid.SHORT);
+            } else {
+                ToastAndroid.show(
+                    result.error || "Delete failed",
+                    ToastAndroid.SHORT
+                );
+            }
+        } catch (err) {
+            ToastAndroid.show("Network error", ToastAndroid.SHORT);
+        }
+    };
+
+    const confirmDelete = (id, name) => {
+        Alert.alert(
+            "Delete Folder",
+            `Delete "${name}"? This cannot be undone.`,
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: () => deleteFolder(id),
+                },
+            ]
+        );
+    };
+
+
+    const editFolder = (folder) => {
+        router.push({
+            pathname: "/folders/UpdateFolderPage",
+            params: {
+                id: folder.id,
+                folder_name: folder.folder_name,
+                subject: folder.subject,
+                topic: folder.topic,
+                difficulty: folder.difficulty,
+            },
+        });
+    };
+
     const filteredFolders = folders.filter(folder =>
         folder.folder_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         folder.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -78,35 +128,30 @@ export default function FolderPage() {
         <View style={{ flex: 1 }}>
             <StatusBar style="dark" />
 
-            {/* BACKGROUND */}
             <Image
                 source={require("../../assets/gifs/writing_background.gif")}
                 style={folderPageStyles.background}
                 resizeMode="cover"
             />
 
-            {/* OVERLAY */}
             <View style={folderPageStyles.overlay} />
 
-            {/* DIAGONAL */}
             <Svg height="100%" width="100%" style={folderPageStyles.svg}>
                 <Polygon
                     points={`
-            0,0 
-            ${width},0 
-            ${width},${height * 0.4} 
-            ${-width * 0.3},${height} 
-            0,${height}
-          `}
+                        0,0 
+                        ${width},0 
+                        ${width},${height * 0.4} 
+                        ${-width * 0.3},${height} 
+                        0,${height}
+                    `}
                     fill="#EEE"
                 />
             </Svg>
 
             <SafeAreaView style={folderPageStyles.container}>
-                {/* HEADER */}
                 <Text style={folderPageStyles.title}>My Folders</Text>
 
-                {/* SEARCH */}
                 <View style={folderPageStyles.searchBar}>
                     <Text style={{ color: "#888" }}>🔍</Text>
                     <TextInput
@@ -118,28 +163,33 @@ export default function FolderPage() {
                     />
                 </View>
 
-                {/* FOLDERS */}
                 <View style={folderPageStyles.scrollContainer}>
                     {loading ? (
                         <View style={folderPageStyles.loadingContainer}>
                             <ActivityIndicator size="large" color="#6C63FF" />
-                            <Text style={folderPageStyles.loadingText}>Loading folders...</Text>
+                            <Text style={folderPageStyles.loadingText}>
+                                Loading folders...
+                            </Text>
                         </View>
                     ) : filteredFolders.length === 0 ? (
                         <View style={folderPageStyles.emptyContainer}>
                             <Text style={folderPageStyles.emptyText}>
-                                {searchQuery ? "No matching folders found" : "No folders yet. Create your first folder!"}
+                                {searchQuery
+                                    ? "No matching folders found"
+                                    : "No folders yet. Create your first folder!"}
                             </Text>
                         </View>
                     ) : (
                         <ScrollView
                             showsVerticalScrollIndicator={false}
                             refreshControl={
-                                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                                <RefreshControl
+                                    refreshing={refreshing}
+                                    onRefresh={onRefresh}
+                                />
                             }
                         >
                             {layout === "grid" ? (
-                                // 🔲 GRID VIEW
                                 <View style={folderPageStyles.gridContainer}>
                                     {filteredFolders.map((folder) => (
                                         <TouchableOpacity
@@ -150,9 +200,28 @@ export default function FolderPage() {
                                                     pathname: "/folders/cards",
                                                     params: {
                                                         folderId: folder.id,
-                                                        folderName: folder.folder_name
+                                                        folderName: folder.folder_name,
                                                     },
                                                 })
+                                            }
+                                            onLongPress={() =>
+                                                Alert.alert(
+                                                    "Folder Options",
+                                                    folder.folder_name,
+                                                    [
+                                                        { text: "Cancel", style: "cancel" },
+                                                        {
+                                                            text: "Edit",
+                                                            onPress: () => editFolder(folder),
+                                                        },
+                                                        {
+                                                            text: "Delete",
+                                                            style: "destructive",
+                                                            onPress: () =>
+                                                                confirmDelete(folder.id, folder.folder_name),
+                                                        },
+                                                    ]
+                                                )
                                             }
                                         >
                                             <Text style={folderPageStyles.folderTitle}>
@@ -173,7 +242,6 @@ export default function FolderPage() {
                                     ))}
                                 </View>
                             ) : layout === "list" ? (
-                                // 📋 LIST VIEW
                                 <View>
                                     {filteredFolders.map((folder) => (
                                         <TouchableOpacity
@@ -184,18 +252,35 @@ export default function FolderPage() {
                                                     pathname: "/folders/cards",
                                                     params: {
                                                         folderId: folder.id,
-                                                        folderName: folder.folder_name
+                                                        folderName: folder.folder_name,
                                                     },
                                                 })
                                             }
+                                            onLongPress={() =>
+                                                Alert.alert(
+                                                    "Folder Options",
+                                                    folder.folder_name,
+                                                    [
+                                                        { text: "Cancel", style: "cancel" },
+                                                        {
+                                                            text: "Edit",
+                                                            onPress: () => editFolder(folder),
+                                                        },
+                                                        {
+                                                            text: "Delete",
+                                                            style: "destructive",
+                                                            onPress: () =>
+                                                                confirmDelete(folder.id, folder.folder_name),
+                                                        },
+                                                    ]
+                                                )
+                                            }
                                         >
                                             <View style={folderPageStyles.listCardContent}>
-                                                {/* Folder Name - Top Left */}
                                                 <Text style={folderPageStyles.listFolderTitle}>
                                                     {folder.folder_name}
                                                 </Text>
 
-                                                {/* Card Count and Difficulty - Bottom Left */}
                                                 <View style={folderPageStyles.listCardFooter}>
                                                     <Text style={folderPageStyles.listCardCount}>
                                                         📄 {folder.card_quantity || 0} cards
@@ -211,7 +296,6 @@ export default function FolderPage() {
                                     ))}
                                 </View>
                             ) : (
-                                // 📜 SCROLL VIEW
                                 <View>
                                     {filteredFolders.map((folder) => (
                                         <TouchableOpacity
@@ -222,9 +306,28 @@ export default function FolderPage() {
                                                     pathname: "/folders/cards",
                                                     params: {
                                                         folderId: folder.id,
-                                                        folderName: folder.folder_name
+                                                        folderName: folder.folder_name,
                                                     },
                                                 })
+                                            }
+                                            onLongPress={() =>
+                                                Alert.alert(
+                                                    "Folder Options",
+                                                    folder.folder_name,
+                                                    [
+                                                        { text: "Cancel", style: "cancel" },
+                                                        {
+                                                            text: "Edit",
+                                                            onPress: () => editFolder(folder),
+                                                        },
+                                                        {
+                                                            text: "Delete",
+                                                            style: "destructive",
+                                                            onPress: () =>
+                                                                confirmDelete(folder.id, folder.folder_name),
+                                                        },
+                                                    ]
+                                                )
                                             }
                                         >
                                             <Text style={folderPageStyles.folderTitle}>
@@ -251,7 +354,6 @@ export default function FolderPage() {
                     )}
                 </View>
 
-                {/* FLOATING BUTTONS */}
                 <View style={folderPageStyles.rightButtons}>
                     <TouchableOpacity
                         onPress={() => router.push("/folders/createFolder")}
@@ -264,30 +366,28 @@ export default function FolderPage() {
                         style={folderPageStyles.squareBtn}
                         onPress={onRefresh}
                     >
-                        <Text>🔄</Text>
+                        <Ionicons name="refresh-outline" size={22} color="#000" />
                     </TouchableOpacity>
 
-                    {/* SWITCH BUTTON */}
                     <TouchableOpacity
                         style={folderPageStyles.squareBtn}
                         onPress={() => {
-                            if (layout === "scroll") {
-                                setLayout("list")
-                                //ToastAndroid.show("List View", ToastAndroid.SHORT);
-                            }
-                            else if (layout === "list") {
-                                setLayout("grid")
-                                //ToastAndroid.show("Grid View", ToastAndroid.SHORT);
-                            }
-                            else {
-                                setLayout("scroll")
-                                //ToastAndroid.show("Scroll View", ToastAndroid.SHORT);
-                            }
+                            if (layout === "scroll") setLayout("list");
+                            else if (layout === "list") setLayout("grid");
+                            else setLayout("scroll");
                         }}
                     >
-                        <Text>
-                            {layout === "scroll" ? "☰" : layout === "list" ? "📋" : "🔲"}
-                        </Text>
+                     <Ionicons
+  name={
+    layout === "scroll"
+      ? "reorder-three-outline"
+      : layout === "list"
+      ? "list-outline"
+      : "grid-outline"
+  }
+  size={22}
+  color="#000"
+/>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>

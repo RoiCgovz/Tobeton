@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { router } from 'expo-router';
 import {
     View,
     Text,
-    settingsPageStylesheet,
     TouchableOpacity,
     ScrollView,
     Image,
@@ -20,14 +19,34 @@ import {
 } from "@expo-google-fonts/inter";
 import { Ionicons, Feather } from "@expo/vector-icons";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+
+const PROFILE_KEY = "@profile_pic";
+
 const { width, height } = Dimensions.get("window");
 
 export default function SettingsPage() {
+
     const [fontsLoaded] = useFonts({
         Inter_400Regular,
         Inter_600SemiBold,
         Inter_700Bold,
     });
+
+    const [profilePic, setProfilePic] = useState(null);
+
+    const loadProfilePic = async () => {
+        const saved = await AsyncStorage.getItem(PROFILE_KEY);
+        if (saved) setProfilePic(saved);
+    };
+
+    // 🔥 refresh every time screen is focused
+    useFocusEffect(
+        useCallback(() => {
+            loadProfilePic();
+        }, [])
+    );
 
     if (!fontsLoaded) return null;
 
@@ -45,8 +64,14 @@ export default function SettingsPage() {
                     onPress={() => router.push('/settings/changeprofile')}
                 >
                     <View style={settingsPageStyles.row}>
+
+                        {/* 🔥 UPDATED PROFILE IMAGE (NO LOGIC CHANGE) */}
                         <Image
-                            source={require("../../assets/icons/profilepic.png")}
+                            source={
+                                profilePic
+                                    ? { uri: profilePic }
+                                    : require("../../assets/icons/profilepic.png")
+                            }
                             style={settingsPageStyles.profileImage}
                         />
 
@@ -87,8 +112,8 @@ export default function SettingsPage() {
                         <Ionicons name="chevron-forward" size={width * 0.05} color="#999" />
                     </View>
                 </TouchableOpacity>
+
             </ScrollView>
         </SafeAreaView>
     );
 }
-

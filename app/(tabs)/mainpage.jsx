@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { View, Text, TouchableOpacity, ScrollView, Image, Dimensions, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -11,6 +12,8 @@ import { router } from "expo-router";
 import statisticsService from "../../services/statisticsService";
 import folderService from "../../services/folderService";
 
+const PROFILE_KEY = "@profile_pic";
+
 const { width, height } = Dimensions.get("window");
 
 export default function MainPage() {
@@ -21,54 +24,52 @@ export default function MainPage() {
   const [weeklyStats, setWeeklyStats] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const [profilePic, setProfilePic] = useState(null);
+
+ useFocusEffect(
+  useCallback(() => {
     loadData();
-  }, []);
+    loadProfilePic();
+  }, [])
+);
+  const loadProfilePic = async () => {
+    try {
+      const saved = await AsyncStorage.getItem(PROFILE_KEY);
+      if (saved) setProfilePic(saved);
+    } catch (e) {}
+  };
 
   const loadData = async () => {
     setLoading(true);
-    console.log("🔵 loadData started");
 
     try {
       const storedUsername = await AsyncStorage.getItem("username");
       if (storedUsername) {
         setUsername(storedUsername);
-        console.log("🔵 Username loaded:", storedUsername);
       }
-    } catch (error) {
-      console.log("Error loading username:", error);
-    }
+    } catch (error) {}
 
     const statsResult = await statisticsService.getStatistics();
-    console.log("🔵 Stats result success:", statsResult.success);
     if (statsResult.success) {
-      console.log("🔵 Stats data:", statsResult.data);
       setStats(statsResult.data);
     }
 
     const foldersResult = await folderService.getFolders();
-    console.log("🔵 Folders result success:", foldersResult.success);
     if (foldersResult.success) {
-      console.log("🔵 Folders count:", foldersResult.data.length);
       setTotalFolders(foldersResult.data.length);
-      const totalCardCount = foldersResult.data.reduce((sum, folder) => sum + (folder.card_quantity || 0), 0);
+      const totalCardCount = foldersResult.data.reduce(
+        (sum, folder) => sum + (folder.card_quantity || 0),
+        0
+      );
       setTotalCards(totalCardCount);
-      console.log("🔵 Total cards:", totalCardCount);
     }
 
     const weeklyResult = await statisticsService.getWeeklyStats();
-    console.log("🔵 Weekly result:", weeklyResult);
-    console.log("🔵 Weekly success:", weeklyResult.success);
     if (weeklyResult.success) {
-      console.log("🔵 Weekly data length:", weeklyResult.data?.length);
-      console.log("🔵 Weekly data:", JSON.stringify(weeklyResult.data));
       setWeeklyStats(weeklyResult.data);
-    } else {
-      console.log("🔵 Weekly result error:", weeklyResult.error);
     }
 
     setLoading(false);
-    console.log("🔵 loadData finished");
   };
 
   const [fontsLoaded] = useFonts({
@@ -84,14 +85,9 @@ export default function MainPage() {
       label: "Achievements"
     },
     {
-      icon: require("../../assets/icons/icons8-tetris-100.png"),
+      icon: require("../../assets/icons/icons8-folder-100.png"),
       action: () => router.push("/folders"),
       label: "Folders"
-    },
-    {
-      icon: require("../../assets/icons/icons8-medal-100.png"),
-      action: () => router.push("/profile/stats"),
-      label: "Stats"
     },
   ];
 
@@ -102,13 +98,9 @@ export default function MainPage() {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
 
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    } else if (minutes > 0) {
-      return `${minutes}m`;
-    } else {
-      return `${totalSeconds}s`;
-    }
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    if (minutes > 0) return `${minutes}m`;
+    return `${totalSeconds}s`;
   };
 
   const getAverageScore = () => {
@@ -121,20 +113,19 @@ export default function MainPage() {
       const date = new Date();
       date.setDate(date.getDate() - i);
       days.push({
-        label: date.toLocaleDateString('en-US', { weekday: 'short' }),
-        fullDate: date.toISOString().split('T')[0],
-        day: date.getDate()
+        label: date.toLocaleDateString("en-US", { weekday: "short" }),
+        fullDate: date.toISOString().split("T")[0],
+        day: date.getDate(),
       });
     }
     return days;
   };
 
-  // ✅ FIXED: Use actual flashcard_seconds + quiz_seconds from daily_statistics
   const getStudyHoursForDay = (dateStr) => {
     const dayStat = weeklyStats.find(s => s.date === dateStr);
     if (dayStat) {
       const totalSeconds = (dayStat.flashcard_seconds || 0) + (dayStat.quiz_seconds || 0);
-      return totalSeconds / 3600; // Convert to hours
+      return totalSeconds / 3600;
     }
     return 0;
   };
@@ -143,19 +134,17 @@ export default function MainPage() {
   const studyHours = last7Days.map(day => getStudyHoursForDay(day.fullDate));
   const maxHours = Math.max(...studyHours, 1);
 
-  // Graph dimensions
   const graphWidth = width - 80;
   const graphHeight = 150;
   const paddingLeft = 21;
   const paddingRight = 20;
   const paddingBottom = 25;
 
-  // Calculate points for line graph
   const getPoints = () => {
     const stepX = (graphWidth - paddingLeft - paddingRight) / (studyHours.length - 1);
     return studyHours.map((hours, index) => ({
-      x: paddingLeft + (index * stepX),
-      y: graphHeight - paddingBottom - ((hours / maxHours) * (graphHeight - paddingBottom - 20))
+      x: paddingLeft + index * stepX,
+      y: graphHeight - paddingBottom - ((hours / maxHours) * (graphHeight - paddingBottom - 20)),
     }));
   };
 
@@ -165,9 +154,9 @@ export default function MainPage() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#EEE' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#EEE" }}>
         <ActivityIndicator size="large" color="#6C63FF" />
-        <Text style={{ marginTop: 10, fontFamily: 'Inter_400Regular' }}>Loading...</Text>
+        <Text style={{ marginTop: 10, fontFamily: "Inter_400Regular" }}>Loading...</Text>
       </View>
     );
   }
@@ -198,16 +187,18 @@ export default function MainPage() {
       </Svg>
 
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={mainPageStyles.scrollContainer}
-        >
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={mainPageStyles.scrollContainer}>
+
           {/* HEADER */}
           <View style={mainPageStyles.profileContainer}>
             <View style={mainPageStyles.leftSection}>
               <TouchableOpacity onPress={() => router.push("/profile")}>
                 <Image
-                  source={require("../../assets/icons/profilepic.png")}
+                  source={
+                    profilePic
+                      ? { uri: profilePic }
+                      : require("../../assets/icons/profilepic.png")
+                  }
                   style={mainPageStyles.profileImage}
                 />
               </TouchableOpacity>
@@ -217,16 +208,7 @@ export default function MainPage() {
                 <Text style={mainPageStyles.name}>{username}</Text>
               </View>
             </View>
-
-            <TouchableOpacity>
-              <Image
-                source={require("../../assets/icons/moon.png")}
-                style={mainPageStyles.moonimage}
-              />
-            </TouchableOpacity>
           </View>
-
-
 
           {/* MAIN ROW */}
           <View style={mainPageStyles.mainRow}>
@@ -239,20 +221,12 @@ export default function MainPage() {
             </View>
 
             <View style={mainPageStyles.rightContainer}>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={mainPageStyles.subjectScroll}
-              >
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={mainPageStyles.subjectScroll}>
                 <View style={mainPageStyles.subjectCard}>
-                  <Image
-                    source={require("../../assets/gifs/sixseven(2).gif")}
-                    style={mainPageStyles.subjectImage}
-                  />
                   <Text style={mainPageStyles.subjectTitle}>Quick Stats</Text>
                   <View style={mainPageStyles.subjectStatsContainer}>
                     <Text style={mainPageStyles.subjectStat}>Quizzes: {stats?.total_quizzes_taken || 0}</Text>
-                    <Text style={mainPageStyles.subjectStat}>Streak: 🔥 {stats?.streak || 0} days</Text>
+                    <Text style={mainPageStyles.subjectStat}>Streak: {stats?.streak || 0} days</Text>
                   </View>
                 </View>
               </ScrollView>
@@ -279,109 +253,36 @@ export default function MainPage() {
             </View>
           </View>
 
-          {/* LINE GRAPH - Daily Study Hours */}
+          {/* GRAPH */}
           <View style={mainPageStyles.graphContainer}>
             <Text style={mainPageStyles.graphTitle}>Daily Study Hours</Text>
 
             <View style={mainPageStyles.graphCard}>
               <Svg width={graphWidth} height={graphHeight}>
-                {/* Y-axis */}
-                <Line
-                  x1={paddingLeft - 5}
-                  y1={10}
-                  x2={paddingLeft - 5}
-                  y2={graphHeight - paddingBottom + 5}
-                  stroke="#666"
-                  strokeWidth={1}
-                />
 
-                {/* X-axis */}
-                <Line
-                  x1={paddingLeft - 5}
-                  y1={graphHeight - paddingBottom + 5}
-                  x2={graphWidth}
-                  y2={graphHeight - paddingBottom + 5}
-                  stroke="#666"
-                  strokeWidth={1}
-                />
+                <Line x1={paddingLeft - 5} y1={10} x2={paddingLeft - 5} y2={graphHeight - paddingBottom + 5} stroke="#666" strokeWidth={1} />
+                <Line x1={paddingLeft - 5} y1={graphHeight - paddingBottom + 5} x2={graphWidth} y2={graphHeight - paddingBottom + 5} stroke="#666" strokeWidth={1} />
 
-                {/* Y-axis labels */}
-                <SvgText
-                  x={paddingLeft - 8}
-                  y={10}
-                  fontSize="10"
-                  fill="#666"
-                  textAnchor="end"
-                >
-                  {maxHours.toFixed(1)}h
-                </SvgText>
-                <SvgText
-                  x={paddingLeft - 8}
-                  y={(graphHeight - paddingBottom + 5 + 10) / 2}
-                  fontSize="10"
-                  fill="#666"
-                  textAnchor="end"
-                >
-                  {(maxHours / 2).toFixed(1)}h
-                </SvgText>
-                <SvgText
-                  x={paddingLeft - 8}
-                  y={graphHeight - paddingBottom + 5}
-                  fontSize="10"
-                  fill="#666"
-                  textAnchor="end"
-                >
-                  0h
-                </SvgText>
-
-                {/* Grid lines */}
-                <Line
-                  x1={paddingLeft - 2}
-                  y1={10}
-                  x2={graphWidth}
-                  y2={10}
-                  stroke="#DDD"
-                  strokeWidth={0.5}
-                  strokeDasharray="4,4"
-                />
-                <Line
-                  x1={paddingLeft - 2}
-                  y1={(graphHeight - paddingBottom + 5 + 10) / 2}
-                  x2={graphWidth}
-                  y2={(graphHeight - paddingBottom + 5 + 10) / 2}
-                  stroke="#DDD"
-                  strokeWidth={0.5}
-                  strokeDasharray="4,4"
-                />
-
-                {/* Line connecting points */}
                 <Polygon
-                  points={points.map(p => `${p.x},${p.y}`).join(' ')}
+                  points={points.map(p => `${p.x},${p.y}`).join(" ")}
                   fill="none"
                   stroke="#333"
                   strokeWidth={2.5}
                 />
 
-                {/* Area under line (optional) */}
                 <Polygon
                   points={[
                     `${points[0]?.x || paddingLeft},${graphHeight - paddingBottom + 5}`,
                     ...points.map(p => `${p.x},${p.y}`),
                     `${points[points.length - 1]?.x || graphWidth},${graphHeight - paddingBottom + 5}`
-                  ].join(' ')}
+                  ].join(" ")}
                   fill="#333"
                   fillOpacity={0.1}
                 />
 
-                {/* Points and X-axis labels */}
                 {points.map((point, index) => (
                   <React.Fragment key={index}>
-                    <Circle
-                      cx={point.x}
-                      cy={point.y}
-                      r={4}
-                      fill="#333"
-                    />
+                    <Circle cx={point.x} cy={point.y} r={4} fill="#333" />
                     <SvgText
                       x={point.x}
                       y={graphHeight - paddingBottom + 18}
@@ -396,6 +297,7 @@ export default function MainPage() {
               </Svg>
             </View>
           </View>
+
         </ScrollView>
       </SafeAreaView>
     </View>

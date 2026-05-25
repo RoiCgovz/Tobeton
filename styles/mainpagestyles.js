@@ -106,12 +106,13 @@ export const mainPageStyles = StyleSheet.create({
 
   subjectCard: {
     width: width * 0.6,
-    height: height * 0.31,
+    height: height * 0.2,
     backgroundColor: "#fff",
     borderRadius: width * 0.05,
     padding: width * 0.04,
     marginRight: width * 0.04,
     elevation: 6,
+    alignSelf: "center",
   },
   subjectImage: {
     width: width * 0.52,
